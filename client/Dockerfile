@@ -1,6 +1,6 @@
 FROM node:20.11-alpine3.18
 
-COPY ./react/app/ /app
+COPY ./client/app/ /app
 
 WORKDIR /app
 

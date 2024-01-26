@@ -1,56 +1,58 @@
 version: "3.8"
 services:
-  # db:
-  #   container_name: mysql
-  #   image: postgres:12.3-alpine
-  #   env_file:
-  #     - ./.env
-  #   restart: always
-  #   volumes:
-  #     - ./db/data:/var/lib/mysql:rw
-  #   ports:
-  #     - "5432:5432"
+  db:
+    container_name: mysql
+    image: mysql:8.0.36
+    env_file:
+      - ./.env
+    restart: always
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/init/:/docker-entrypoint-initdb.d/
+    ports:
+      - "3306:3306"
   client:
     container_name: react
     build:
       context: .
-      dockerfile: ./react/Dockerfile
+      dockerfile: ./client/Dockerfile
     env_file:
       - ./.env
     restart: always
     #dev
     volumes:
-      - ./react/app:/app:rw
+      - ./client/app:/app
     tty: true
     depends_on:
       - server
-      # - db
+      - db
     ports:
       - "3000:3000"
   server:
     container_name: golang
     build:
       context: .
-      dockerfile: ./golang/Dockerfile
+      dockerfile: ./server/Dockerfile
     env_file:
       - ./.env
     restart: always
     #dev
     volumes:
-      - ./golang:/src:rw
+      - ./server:/src
     #dev
     command: air -c .air.toml
     tty: true
-    # depends_on: # - db
+    depends_on:
+      - db
     ports:
       - "3001:3001"
   proxy:
     container_name: nginx
     build:
       context: .
-      dockerfile: ./nginx/Dockerfile
+      dockerfile: ./proxy/Dockerfile
     volumes:
-      - ./nginx/log:/var/log/nginx:rw
+      - ./proxy/log:/var/log/nginx
     ports:
       - "80:80"
     depends_on:

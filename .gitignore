@@ -1,7 +1,7 @@
 /.env
-/nginx/log/*
-!/nginx/log/.keep
-/tmp/db/*
-!/tmp/db/.keep
-/golang/tmp
+/proxy/log/*
+!/proxy/log/.keep
+/server/tmp
 pre_cmd.txt
+post_cmd.txt
+db/data
