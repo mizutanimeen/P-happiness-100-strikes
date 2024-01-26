@@ -1,0 +1,7 @@
+/.env
+/nginx/log/*
+!/nginx/log/.keep
+/tmp/db/*
+!/tmp/db/.keep
+/golang/tmp
+pre_cmd.txt

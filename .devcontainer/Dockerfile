@@ -74,4 +74,22 @@ ENV GOROOT=/usr/local/go \
 RUN mkdir ${GOPATH} \
     && chown -R ${USERNAME}:${USERNAME} ${GOPATH}
 
+# node 環境
+ARG NODE_VERSION=20.11
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+    nodejs \
+    npm
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    npm install -g n
+RUN n ${NODE_VERSION}
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get purge -y --auto-remove \
+    nodejs \
+    npm
+
 USER ${USERNAME}

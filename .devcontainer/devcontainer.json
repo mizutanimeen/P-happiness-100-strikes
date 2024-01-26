@@ -11,7 +11,8 @@
 			"extensions": [
 				"streetsidesoftware.code-spell-checker",
 				"ms-azuretools.vscode-docker",
-				"golang.go"
+				"golang.go",
+				"ms-vscode.vscode-typescript-next"
 			]
 		}
 	}
