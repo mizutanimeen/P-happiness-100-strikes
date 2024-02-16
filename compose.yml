@@ -7,8 +7,8 @@ services:
       - ./.env
     restart: always
     volumes:
-      - ./db/data:/var/lib/mysql
-      - ./db/init/:/docker-entrypoint-initdb.d/
+      - db-data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
   client:
@@ -57,3 +57,6 @@ services:
       - "80:80"
     depends_on:
       - client
+
+volumes:
+  db-data:

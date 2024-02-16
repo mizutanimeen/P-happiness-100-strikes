@@ -12,7 +12,8 @@
 				"streetsidesoftware.code-spell-checker",
 				"ms-azuretools.vscode-docker",
 				"golang.go",
-				"ms-vscode.vscode-typescript-next"
+				"ms-vscode.vscode-typescript-next",
+				"GitHub.copilot"
 			]
 		}
 	}
