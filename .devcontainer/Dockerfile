@@ -85,11 +85,11 @@ RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
 RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
     npm install -g n
-RUN n ${NODE_VERSION}
 RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get purge -y --auto-remove \
     nodejs \
     npm
+RUN n ${NODE_VERSION}
 
 USER ${USERNAME}

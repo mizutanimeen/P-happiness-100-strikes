@@ -13,7 +13,8 @@
 				"ms-azuretools.vscode-docker",
 				"golang.go",
 				"ms-vscode.vscode-typescript-next",
-				"GitHub.copilot"
+				"GitHub.copilot",
+				"dsznajder.es7-react-js-snippets"
 			]
 		}
 	}
