@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import './css/body.css';
 import { format } from 'date-fns';
+import { useState } from "react";
 
-export function getMonthDays(month = new Date().getMonth()): Date[][] {
+export function getMonthDays(currentMonth: number): Date[][] {
+    const month = new Date().getMonth() + currentMonth;
     const currentYear = new Date().getFullYear();
     const firstDOW = new Date(currentYear, month, 1).getDay();
     // firstDOW = 0 When it is Sunday
@@ -17,8 +19,12 @@ export function getMonthDays(month = new Date().getMonth()): Date[][] {
     return daysMatrix;
 }
 
-export function CalendarBody(props: { currentMonthDays: Date[][] }): JSX.Element {
-    const currentMonthDays = props.currentMonthDays;
+export function CalendarBody(props: { currentMonthDiff: number }): JSX.Element {
+    const [currentMonthDays, setCurrentMonthDays] = useState<Date[][]>(getMonthDays(0));
+    useEffect(() => {
+        setCurrentMonthDays(getMonthDays(props.currentMonthDiff))
+    }, [props.currentMonthDiff]);
+
     return <>
         <table className="body">
             <thead>
