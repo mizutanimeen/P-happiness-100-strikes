@@ -2,7 +2,7 @@ import React from "react";
 import './css/body.css';
 import { format } from 'date-fns';
 
-export function GetMonthDays(month = new Date().getMonth()): Date[][] {
+export function getMonthDays(month = new Date().getMonth()): Date[][] {
     const currentYear = new Date().getFullYear();
     const firstDOW = new Date(currentYear, month, 1).getDay();
     // firstDOW = 0 When it is Sunday
@@ -17,10 +17,10 @@ export function GetMonthDays(month = new Date().getMonth()): Date[][] {
     return daysMatrix;
 }
 
-export function CalendarBody(props: { currentMonth: Date[][]; }): JSX.Element {
-    const { currentMonth } = props;
-    return <React.Fragment>
-        <table className="calendarBody">
+export function CalendarBody(props: { currentMonthDays: Date[][] }): JSX.Element {
+    const currentMonthDays = props.currentMonthDays;
+    return <>
+        <table className="body">
             <thead>
                 <tr>
                     <th>日</th>
@@ -32,19 +32,38 @@ export function CalendarBody(props: { currentMonth: Date[][]; }): JSX.Element {
                     <th>土</th>
                 </tr>
             </thead>
-            <tbody>
-                {currentMonth.map((row: Date[], i: React.Key) => (
+            <TableBody currentMonthDays={currentMonthDays} />
+        </table>
+    </ >
+}
+
+function TableBody(props: { currentMonthDays: Date[][] }): JSX.Element {
+    const currentMonthDays = props.currentMonthDays;
+    return <>
+        <tbody>
+            {
+                currentMonthDays.map((row: Date[], i: React.Key) => (
                     <tr key={i}>
                         {
                             row.map((day: Date, j: React.Key) => (
-                                <td key={j} className="day">
+                                < td key={j} className={`day ${getCurrentDayClass(day)}`}>
                                     {format(day, "dd")}
                                 </td>
                             ))
                         }
                     </tr>
-                ))}
-            </tbody>
-        </table>
-    </React.Fragment>
+                ))
+            }
+        </tbody>
+    </>
+}
+
+function getCurrentDayClass(today: Date): string {
+    const currentDate = new Date();
+    if (today.getDate() === currentDate.getDate() &&
+        today.getMonth() === currentDate.getMonth() &&
+        today.getFullYear() === currentDate.getFullYear()) {
+        return 'currentDay';
+    }
+    return '';
 }

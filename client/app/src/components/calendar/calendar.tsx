@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { GetMonthDays, CalendarBody } from './body'
+import { getMonthDays, CalendarBody } from './body'
+import { CalendarHeader } from './header'
 
 
-
-export const Calendar = () => {
-    const [currentMonth, setCurrentMonth] = useState<Date[][]>(GetMonthDays());
+export function Calendar() {
+    const [currentMonthDays, setCurrentMonthDays] = useState<Date[][]>(getMonthDays());
     return (
         <>
-            <CalendarBody currentMonth={currentMonth} />
+            <CalendarHeader />
+            <CalendarBody currentMonthDays={currentMonthDays} />
         </>
     )
 }
