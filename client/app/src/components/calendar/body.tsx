@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import './css/body.css';
 import { format } from 'date-fns';
 import { useState } from "react";
+import { useSelector } from "../redux/store";
 
 export function getMonthDays(currentMonth: number): Date[][] {
     const month = new Date().getMonth() + currentMonth;
@@ -19,11 +20,14 @@ export function getMonthDays(currentMonth: number): Date[][] {
     return daysMatrix;
 }
 
-export function CalendarBody(props: { currentMonthDiff: number }): JSX.Element {
+export function CalendarBody(): JSX.Element {
+    /* TODO:Date情報をキャッシュする */
     const [currentMonthDays, setCurrentMonthDays] = useState<Date[][]>(getMonthDays(0));
+    const currentMonthDiff = useSelector((state) => state.calendar.value);
+
     useEffect(() => {
-        setCurrentMonthDays(getMonthDays(props.currentMonthDiff))
-    }, [props.currentMonthDiff]);
+        setCurrentMonthDays(getMonthDays(currentMonthDiff))
+    }, [currentMonthDiff]);
 
     return <>
         <table className="body">

@@ -1,12 +1,21 @@
 import React from "react";
 import './css/header.css';
+import { useDispatch } from "react-redux";
+import { increment, decrement } from "../redux/slice";
+import { useSelector } from "../redux/store";
 
-export function CalendarHeader(props: { currentMonthDiff: number }): JSX.Element {
-    const currentYearMonth = yearMonthToString(props.currentMonthDiff);
+
+export function CalendarHeader(): JSX.Element {
+    const currentMonthDiff = useSelector((state) => state.calendar.value);
+    const currentMonthDispatch = useDispatch();
+    const currentYearMonth = yearMonthToString(currentMonthDiff);
+
     return <>
         <div className="header">
             <div>{currentYearMonth}</div>
             <div>+10000円</div>
+            <button onClick={() => currentMonthDispatch(increment())}>++++</button>
+            <button onClick={() => currentMonthDispatch(decrement())}>-----</button>
         </div>
     </>
 }
