@@ -16,6 +16,5 @@ export function Calendar() {
 }
 
 /*
-Redux 
 https://almonta2021blog.com/react-calendar-javascript/
 */
