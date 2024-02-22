@@ -1,17 +1,20 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"log"
+
+	"github.com/mizutanimeen/P-happiness-100-strikes/internal/app"
 )
 
 func main() {
-	router := gin.Default()
+	// TODO: ログ設定
+	app, err := app.New()
+	if err != nil {
+		log.Fatalln("app.New:", err)
+	}
+	defer app.Close()
 
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Hello World",
-		})
-	})
-
-	router.Run(":3001")
+	if err := app.ListenAndServe(); err != nil {
+		log.Fatalln("app.ListenAndServe:", err)
+	}
 }

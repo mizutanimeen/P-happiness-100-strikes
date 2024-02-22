@@ -18,3 +18,7 @@
     background: none;
     padding: 10px;
 }
+
+.header button:hover {
+    background: #ebffcc;
+}
