@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"os"
 	"time"
 
@@ -54,7 +55,7 @@ func (s *Session) UpdateSession(sessionID, userID string) (string, error) {
 }
 
 func (s *Session) CreateSession(userID string) (string, error) {
-	sessionID, err := generateRandomSessionID()
+	sessionID, err := s.generateRandomSessionID(10)
 	if err != nil {
 		return "", err
 	}
@@ -73,11 +74,38 @@ func (s *Session) deleteSession(sessionID string) error {
 	return nil
 }
 
-func generateRandomSessionID() (string, error) {
+func (s *Session) generateRandomSessionID(try int) (string, error) {
+	try -= 1
+	if try < 0 {
+		return "", fmt.Errorf("failed to generate random sessionID")
+	}
+
 	randomBytes := make([]byte, 16)
 	if _, err := rand.Read(randomBytes); err != nil {
 		return "", err
 	}
+	sessionID := hex.EncodeToString(randomBytes)
 
-	return hex.EncodeToString(randomBytes), nil
+	exist, err := s.isExistSessionID(sessionID)
+	if err != nil {
+		return "", err
+	}
+
+	if exist {
+		return s.generateRandomSessionID(try)
+	}
+
+	return sessionID, nil
+}
+
+func (s *Session) isExistSessionID(sessionID string) (bool, error) {
+	exists, err := s.Client.Exists(s.Ctx, sessionID).Result()
+	if err != nil {
+		return false, err
+	}
+	if exists == 1 {
+		return true, nil
+	}
+
+	return false, nil
 }
