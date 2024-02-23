@@ -43,7 +43,9 @@ func MachineCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte(`{"message":"created"}`))
 	}
 }
 
@@ -79,7 +81,9 @@ func MachineUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNoContent)
+		w.Write([]byte(`{"message":"updated"}`))
 	}
 }
 
@@ -108,6 +112,8 @@ func MachineDelete(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNoContent)
+		w.Write([]byte(`{"message":"deleted"}`))
 	}
 }
