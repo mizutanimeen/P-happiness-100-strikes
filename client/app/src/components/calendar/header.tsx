@@ -14,7 +14,7 @@ export function CalendarHeader(): JSX.Element {
     return <>
         <div className="header">
             <div>{currentYearMonth}</div>
-            <div>+10000円</div>
+            <div>+10000円</div> {/* serverで計算する */}
             <button onClick={() => currentMonthDispatch(decrement())}><FaArrowLeft /></button>
             <button onClick={() => currentMonthDispatch(increment())}><FaArrowRight /></button>
         </div>
