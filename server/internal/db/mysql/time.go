@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 	"time"
@@ -36,12 +37,16 @@ func (s *Mysql) TimeRecordGet(userID string, startDate time.Time, endDate time.T
 	return timeRecords, nil
 }
 
-func (s *Mysql) TimeRecordGetOne(userID string, time time.Time) (*model.TimeRecord, error) {
-	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s = ?", timeRecordTable, timeRecordUserID, timeRecordTime)
-	row := s.DB.QueryRow(query, userID, time)
+func (s *Mysql) TimeRecordGetByID(id string, userID string) (*model.TimeRecord, error) {
+	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s = ?", timeRecordTable, timeRecordID, timeRecordUserID)
+	row := s.DB.QueryRow(query, id, userID)
 
 	var timeRecord model.TimeRecord
 	if err := row.Scan(&timeRecord.ID, &timeRecord.UserID, &timeRecord.Time, &timeRecord.InvestmentMoney, &timeRecord.RecoveryMoney, &timeRecord.Create_at, &timeRecord.Update_at); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
 		return nil, fmt.Errorf("error scan: %w", err)
 	}
 	return &timeRecord, nil

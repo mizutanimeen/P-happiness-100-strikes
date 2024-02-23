@@ -18,7 +18,7 @@ type DB interface {
 	DayRecordDelete(id string) error
 
 	TimeRecordGet(userID string, startDate time.Time, endDate time.Time) ([]*model.TimeRecord, error)
-	TimeRecordGetOne(userID string, time time.Time) (*model.TimeRecord, error)
+	TimeRecordGetByID(id string, userID string) (*model.TimeRecord, error)
 	TimeRecordCreate(userID string, time time.Time, investmentMoney int, recoveryMoney int) error
 	TimeRecordUpdate(id string, time time.Time, investmentMoney int, recoveryMoney int) error
 	TimeRecordDelete(id string) error
