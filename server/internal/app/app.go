@@ -1,21 +1,21 @@
 package app
 
 import (
-	"database/sql"
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db"
+	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db/mysql"
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/session"
 )
 
 type App struct {
-	DB      *sql.DB
+	DB      db.DB
 	Session *session.Session
 }
 
 func New() (*App, error) {
-	DB, err := db.New()
+	DB, err := mysql.New()
 	if err != nil {
 		return nil, err
 	}
