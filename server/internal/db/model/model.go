@@ -38,3 +38,15 @@ type Machine struct {
 	Create_at time.Time
 	Update_at time.Time
 }
+
+type RPMRecord struct {
+	ID              string
+	TimeRecordID    string
+	InvestmentMoney int
+	InvestmentBall  int
+	StartRPM        int
+	EndRPM          int
+	MachineID       string
+	Create_at       time.Time
+	Update_at       time.Time
+}

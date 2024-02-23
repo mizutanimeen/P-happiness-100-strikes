@@ -61,13 +61,16 @@ func (a *App) timeRecordsHandler() http.Handler {
 	router.Post("/", api.TimeRecordCreate(a.DB))
 	router.Put("/", api.TimeRecordUpdate(a.DB))
 	router.Delete("/", api.TimeRecordDelete(a.DB))
-	router.Mount("/{id}/rpms", a.rPMRecordsHandler())
+	router.Mount("/{times_id}/rpms", a.rPMRecordsHandler())
 	return router
 }
 
 func (a *App) rPMRecordsHandler() http.Handler {
 	router := chi.NewRouter()
-	router.Get("/", api.RPMRecordsGet())
+	router.Get("/", api.RPMRecordsGet(a.DB))
+	router.Post("/", api.RPMRecordCreate(a.DB))
+	router.Put("/", api.RPMRecordUpdate(a.DB))
+	router.Delete("/", api.RPMRecordDelete(a.DB))
 	return router
 }
 
