@@ -13,6 +13,15 @@ type DayRecord struct {
 	UserID    string
 	Date      time.Time
 	Happiness int
-	Create_at string
-	Update_at string
+	Create_at time.Time
+	Update_at time.Time
+}
+type TimeRecord struct {
+	ID              string
+	UserID          string
+	Time            time.Time
+	InvestmentMoney int
+	RecoveryMoney   int
+	Create_at       time.Time
+	Update_at       time.Time
 }

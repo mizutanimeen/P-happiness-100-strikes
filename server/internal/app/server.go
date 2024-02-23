@@ -56,7 +56,8 @@ func (a *App) dateRecordHandler() http.Handler {
 
 func (a *App) timeRecordHandler() http.Handler {
 	router := chi.NewRouter()
-	router.Get("/", api.TimeRecordGet())
+	router.Get("/", api.TimeRecordGet(a.DB))
+	router.Post("/", api.TimeRecordCreate(a.DB))
 	router.Mount("/{id}/rpms", a.rPMRecordHandler())
 	return router
 }
