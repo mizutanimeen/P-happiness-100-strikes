@@ -12,13 +12,13 @@ func TimeRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 
-		startTime, endTime, status, err := getStartEndDayQuery(r)
+		startTime, endTime, status, err := getStartEndDateQuery(r)
 		if err != nil {
 			http.Error(w, err.Error(), status)
 			return
 		}
 
-		timeRecords, err := DB.TimeRecordGet(id, startTime, endTime)
+		timeRecords, err := DB.TimeRecordsGet(id, startTime, endTime)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -30,7 +30,7 @@ func TimeRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type CreateTimeRecordRequest struct {
+type createTimeRecordRequest struct {
 	DateTime        string `json:"date_time"`
 	InvestmentMoney int    `json:"investment_money"`
 	RecoveryMoney   int    `json:"recovery_money"`
@@ -40,7 +40,7 @@ func TimeRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 
-		var timeRecordReq CreateTimeRecordRequest
+		var timeRecordReq createTimeRecordRequest
 		if err := json.NewDecoder(r.Body).Decode(&timeRecordReq); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
@@ -64,7 +64,7 @@ func TimeRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type UpdateTimeRecordRequest struct {
+type updateTimeRecordRequest struct {
 	ID              string `json:"time_record_id"`
 	DateTime        string `json:"date_time"`
 	InvestmentMoney int    `json:"investment_money"`
@@ -75,7 +75,7 @@ func TimeRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 
-		var timeRecordReq UpdateTimeRecordRequest
+		var timeRecordReq updateTimeRecordRequest
 		if err := json.NewDecoder(r.Body).Decode(&timeRecordReq); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return

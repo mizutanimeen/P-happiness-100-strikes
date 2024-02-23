@@ -50,7 +50,7 @@ func (a *App) dateRecordsHandler() http.Handler {
 	router := chi.NewRouter()
 	router.Get("/", api.DateRecordsGet(a.DB))
 	router.Post("/", api.DateRecordCreate(a.DB))
-	router.Put("/", api.DayRecordUpdate(a.DB))
+	router.Put("/", api.DateRecordUpdate(a.DB))
 	return router
 }
 

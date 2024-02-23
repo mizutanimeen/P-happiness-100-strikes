@@ -18,7 +18,7 @@ var (
 	timeRecordRecoveryMoney   = os.Getenv("MYSQL_TIME_RECORD_RECOVERY_MONEY")
 )
 
-func (s *Mysql) TimeRecordGet(userID string, startDate time.Time, endDate time.Time) ([]*model.TimeRecord, error) {
+func (s *Mysql) TimeRecordsGet(userID string, startDate time.Time, endDate time.Time) ([]*model.TimeRecord, error) {
 	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s >= ? AND %s <= ?", timeRecordTable, timeRecordUserID, timeRecordTime, timeRecordTime)
 	rows, err := s.DB.Query(query, userID, startDate, endDate)
 	if err != nil {

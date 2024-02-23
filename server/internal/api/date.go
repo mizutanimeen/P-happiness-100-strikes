@@ -13,13 +13,13 @@ func DateRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 
-		startTime, endTime, status, err := getStartEndDayQuery(r)
+		startTime, endTime, status, err := getStartEndDateQuery(r)
 		if err != nil {
 			http.Error(w, err.Error(), status)
 			return
 		}
 
-		dayRecords, err := DB.DayRecordGet(id, startTime, endTime)
+		dateRecords, err := DB.DateRecordsGet(id, startTime, endTime)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -27,7 +27,7 @@ func DateRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(dayRecords)
+		json.NewEncoder(w).Encode(dateRecords)
 	}
 }
 
@@ -53,7 +53,7 @@ func DateRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := DB.DayRecordCreate(id, date, dateRecordReq.Happiness); err != nil {
+		if err := DB.DateRecordCreate(id, date, dateRecordReq.Happiness); err != nil {
 			log.Println(err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -65,30 +65,29 @@ func DateRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DayRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
+type updateDateRecordRequest struct {
+	ID        string `json:"date_record_id"`
+	Happiness int    `json:"happiness"`
+}
+
+func DateRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 
-		var dayRecordReq createDateRecordRequest
-		if err := json.NewDecoder(r.Body).Decode(&dayRecordReq); err != nil {
+		var dateRecordReq updateDateRecordRequest
+		if err := json.NewDecoder(r.Body).Decode(&dateRecordReq); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 		defer r.Body.Close()
 
-		date, err := time.Parse("2006-01-02", dayRecordReq.Date)
-		if err != nil {
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
-			return
-		}
-
-		record, err := DB.DayRecordGetOne(id, date)
+		record, err := DB.DateRecordGetByID(dateRecordReq.ID, id)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
-		if err := DB.DayRecordUpdate(record.ID, dayRecordReq.Happiness); err != nil {
+		if err := DB.DateRecordUpdate(record.ID, dateRecordReq.Happiness); err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}

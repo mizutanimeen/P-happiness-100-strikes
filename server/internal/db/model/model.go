@@ -8,7 +8,7 @@ type User struct {
 	Create_at time.Time
 	Update_at time.Time
 }
-type DayRecord struct {
+type DateRecord struct {
 	ID        string
 	UserID    string
 	Date      time.Time

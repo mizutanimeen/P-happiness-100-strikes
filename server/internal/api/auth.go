@@ -19,14 +19,14 @@ type contextKey string
 
 const CK_USERID contextKey = "userID"
 
-type RegisterRequest struct {
+type registerRequest struct {
 	UserID   string `json:"user_id"`
 	Password string `json:"password"`
 }
 
 func RegisterHandler(DB db.DB, s *session.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var registerReq RegisterRequest
+		var registerReq registerRequest
 		if err := json.NewDecoder(r.Body).Decode(&registerReq); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
@@ -64,7 +64,7 @@ func RegisterHandler(DB db.DB, s *session.Session) func(w http.ResponseWriter, r
 	}
 }
 
-type LoginRequest struct {
+type loginRequest struct {
 	UserID   string `json:"user_id"`
 	Password string `json:"password"`
 }
@@ -72,7 +72,7 @@ type LoginRequest struct {
 // TODO: ログイン状態でログインAPIを叩かれた場合の処理
 func LoginHandler(DB db.DB, s *session.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var loginReq LoginRequest
+		var loginReq loginRequest
 		if err := json.NewDecoder(r.Body).Decode(&loginReq); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return

@@ -11,7 +11,7 @@ const (
 	END_DATE_QUERY   = "end"
 )
 
-func getStartEndDayQuery(r *http.Request) (time.Time, time.Time, int, error) {
+func getStartEndDateQuery(r *http.Request) (time.Time, time.Time, int, error) {
 	startDate := r.URL.Query().Get(START_DATE_QUERY)
 	endDate := r.URL.Query().Get(END_DATE_QUERY)
 
