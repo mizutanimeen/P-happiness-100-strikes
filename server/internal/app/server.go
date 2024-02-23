@@ -6,18 +6,26 @@ import (
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/api"
 )
 
 func (a *App) ListenAndServe() error {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
-
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "Cookie"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
 	router.Post("/register", api.RegisterHandler(a.DB, a.Session))
 	router.Post("/login", api.LoginHandler(a.DB, a.Session))
 	router.Get("/logout", api.LogoutHandler())
 	router.Mount("/api/v1", api.WithAuth(a.restAPI(), a.Session))
 
+	// TODO: TLS 対応
 	if err := http.ListenAndServe(":3001", router); err != nil {
 		return fmt.Errorf("ListenAndServe:%w", err)
 	}

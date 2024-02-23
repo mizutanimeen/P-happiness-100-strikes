@@ -51,11 +51,14 @@ func RegisterHandler(DB db.DB, s *session.Session) func(w http.ResponseWriter, r
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+		//TODO: クッキー処理まとめる
 		http.SetCookie(w, &http.Cookie{
-			Name:    COOKIE_SESSION_NAME,
-			Value:   sessionID,
-			Expires: time.Now().Add(COOKIE_SESSION_EXPIRATION),
-			Path:    "/",
+			Name:     COOKIE_SESSION_NAME,
+			Value:    sessionID,
+			Expires:  time.Now().Add(COOKIE_SESSION_EXPIRATION),
+			Path:     "/",
+			Secure:   false, // TODO: true にする
+			HttpOnly: true,
 		})
 
 		w.Header().Set("Content-Type", "application/json")
@@ -99,10 +102,12 @@ func LoginHandler(DB db.DB, s *session.Session) func(w http.ResponseWriter, r *h
 
 		// クッキーにセッションIDを保存
 		http.SetCookie(w, &http.Cookie{
-			Name:    COOKIE_SESSION_NAME,
-			Value:   sessionID,
-			Expires: time.Now().Add(COOKIE_SESSION_EXPIRATION),
-			Path:    "/",
+			Name:     COOKIE_SESSION_NAME,
+			Value:    sessionID,
+			Expires:  time.Now().Add(COOKIE_SESSION_EXPIRATION),
+			Path:     "/",
+			Secure:   false, // TODO: true にする
+			HttpOnly: true,
 		})
 
 		w.Header().Set("Content-Type", "application/json")
@@ -149,10 +154,12 @@ func WithAuth(next http.Handler, s *session.Session) http.Handler {
 			return
 		}
 		http.SetCookie(w, &http.Cookie{
-			Name:    COOKIE_SESSION_NAME,
-			Value:   newSessionID,
-			Expires: time.Now().Add(COOKIE_SESSION_EXPIRATION),
-			Path:    "/",
+			Name:     COOKIE_SESSION_NAME,
+			Value:    newSessionID,
+			Expires:  time.Now().Add(COOKIE_SESSION_EXPIRATION),
+			Path:     "/",
+			Secure:   false, // TODO: true にする
+			HttpOnly: true,
 		})
 
 		c = context.WithValue(c, CK_USERID, userID)

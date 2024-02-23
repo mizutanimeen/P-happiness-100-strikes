@@ -5,3 +5,5 @@
 pre_cmd.txt
 post_cmd.txt
 db/data
+cert.pem
+key.pem

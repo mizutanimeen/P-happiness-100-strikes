@@ -6,7 +6,7 @@ import { useSelector } from "../redux/store";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 
-export function CalendarHeader(): JSX.Element {
+export function CalendarHeader(): React.ReactElement {
     const currentMonthDiff = useSelector((state) => state.calendar.value);
     const currentYearMonth = yearMonthToString(currentMonthDiff);
     const currentMonthDispatch = useDispatch();
