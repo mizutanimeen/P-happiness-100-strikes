@@ -1,18 +1,12 @@
-package db
+package mysql
 
 import (
 	"database/sql"
 	"fmt"
 	"os"
-	"time"
-)
 
-type User struct {
-	ID        string
-	Password  string
-	Create_at time.Time
-	Update_at time.Time
-}
+	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db/model"
+)
 
 var (
 	userTable = os.Getenv("MYSQL_USERS_TABLE")
@@ -20,11 +14,11 @@ var (
 	userPass  = os.Getenv("MYSQL_USERS_PASSWORD")
 )
 
-func UserGet(DB *sql.DB, id string) (*User, error) {
+func (s *Mysql) UserGet(id string) (*model.User, error) {
 	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ?", userTable, userID)
-	row := DB.QueryRow(query, id)
+	row := s.DB.QueryRow(query, id)
 
-	var user User
+	var user model.User
 	if err := row.Scan(&user.ID, &user.Password, &user.Create_at, &user.Update_at); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // nil,nilはよくないかな？
@@ -34,9 +28,9 @@ func UserGet(DB *sql.DB, id string) (*User, error) {
 	return &user, nil
 }
 
-func UserCreate(DB *sql.DB, id string, password string) error {
+func (s *Mysql) UserCreate(id string, password string) error {
 	query := fmt.Sprintf("INSERT INTO %s(%s, %s) VALUES(?,?)", userTable, userID, userPass)
-	insert, err := DB.Prepare(query)
+	insert, err := s.DB.Prepare(query)
 	if err != nil {
 		return fmt.Errorf("error prepare: %w", err)
 	}

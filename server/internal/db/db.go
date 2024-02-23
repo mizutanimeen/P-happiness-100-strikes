@@ -1,45 +1,19 @@
 package db
 
 import (
-	"database/sql"
-	"fmt"
-	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db/model"
 )
 
-func New() (*sql.DB, error) {
-	user := os.Getenv("MYSQL_USER")
-	pass := os.Getenv("MYSQL_PASSWORD")
-	DBName := os.Getenv("MYSQL_DATABASE")
-	IP := os.Getenv("MYSQL_IP")
-	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", user, pass, IP, DBName)
-
-	DB, err := sql.Open("mysql", path)
-	if err != nil {
-		return nil, fmt.Errorf("error DB open: %w", err)
-	}
-
-	if err := checkConnect(DB); err != nil {
-		return nil, fmt.Errorf("error DB ping: %w", err)
-	}
-
-	fmt.Println("DB connected")
-
-	return DB, nil
-}
-
-func checkConnect(DB *sql.DB) error {
-	var err error
-	for count := 100; count > 0; count-- {
-		err = DB.Ping()
-		if err != nil {
-			time.Sleep(time.Second * 2)
-		} else {
-			break
-		}
-	}
-
-	return err
+type DB interface {
+	UserGet(id string) (*model.User, error)
+	UserCreate(id string, password string) error
+	DayRecordGet(userID string, startDate time.Time, endDate time.Time) ([]*model.DayRecord, error)
+	DayRecordGetOne(userID string, date time.Time) (*model.DayRecord, error)
+	DayRecordCreate(userID string, date time.Time, happiness int) error
+	DayRecordUpdate(id string, happiness int) error
+	DayRecordDelete(id string) error
+	Close() error
 }
