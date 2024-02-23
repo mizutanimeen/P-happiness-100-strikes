@@ -28,7 +28,7 @@ func (a *App) ListenAndServe() error {
 func (a *App) restAPI() http.Handler {
 	router := chi.NewRouter()
 	router.Mount("/users", a.usersHandler())
-	router.Mount("/records", a.recordHandler())
+	router.Mount("/records", a.recordsHandler())
 	return router
 }
 
@@ -39,33 +39,33 @@ func (a *App) usersHandler() http.Handler {
 	return router
 }
 
-func (a *App) recordHandler() http.Handler {
+func (a *App) recordsHandler() http.Handler {
 	router := chi.NewRouter()
-	router.Mount("/dates", a.dateRecordHandler())
-	router.Mount("/times", a.timeRecordHandler())
+	router.Mount("/dates", a.dateRecordsHandler())
+	router.Mount("/times", a.timeRecordsHandler())
 	return router
 }
 
-func (a *App) dateRecordHandler() http.Handler {
+func (a *App) dateRecordsHandler() http.Handler {
 	router := chi.NewRouter()
-	router.Get("/", api.DayRecordGet(a.DB))
-	router.Post("/", api.DayRecordCreate(a.DB))
+	router.Get("/", api.DateRecordsGet(a.DB))
+	router.Post("/", api.DateRecordCreate(a.DB))
 	router.Put("/", api.DayRecordUpdate(a.DB))
 	return router
 }
 
-func (a *App) timeRecordHandler() http.Handler {
+func (a *App) timeRecordsHandler() http.Handler {
 	router := chi.NewRouter()
-	router.Get("/", api.TimeRecordGet(a.DB))
+	router.Get("/", api.TimeRecordsGet(a.DB))
 	router.Post("/", api.TimeRecordCreate(a.DB))
 	router.Put("/", api.TimeRecordUpdate(a.DB))
 	router.Delete("/", api.TimeRecordDelete(a.DB))
-	router.Mount("/{id}/rpms", a.rPMRecordHandler())
+	router.Mount("/{id}/rpms", a.rPMRecordsHandler())
 	return router
 }
 
-func (a *App) rPMRecordHandler() http.Handler {
+func (a *App) rPMRecordsHandler() http.Handler {
 	router := chi.NewRouter()
-	router.Get("/", api.RPMRecordGet())
+	router.Get("/", api.RPMRecordsGet())
 	return router
 }

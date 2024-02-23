@@ -8,7 +8,7 @@ import (
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db"
 )
 
-func TimeRecordGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
+func TimeRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 

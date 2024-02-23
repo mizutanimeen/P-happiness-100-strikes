@@ -2,7 +2,7 @@ package api
 
 import "net/http"
 
-func RPMRecordGet() func(w http.ResponseWriter, r *http.Request) {
+func RPMRecordsGet() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 

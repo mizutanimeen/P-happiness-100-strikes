@@ -9,12 +9,7 @@ import (
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db"
 )
 
-type DayRecordRequest struct {
-	Date      string `json:"date"`
-	Happiness int    `json:"happiness"`
-}
-
-func DayRecordGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
+func DateRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 
@@ -36,24 +31,29 @@ func DayRecordGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DayRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
+type createDateRecordRequest struct {
+	Date      string `json:"date"`
+	Happiness int    `json:"happiness"`
+}
+
+func DateRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 
-		var dayRecordReq DayRecordRequest
-		if err := json.NewDecoder(r.Body).Decode(&dayRecordReq); err != nil {
+		var dateRecordReq createDateRecordRequest
+		if err := json.NewDecoder(r.Body).Decode(&dateRecordReq); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 		defer r.Body.Close()
 
-		date, err := time.Parse("2006-01-02", dayRecordReq.Date)
+		date, err := time.Parse("2006-01-02", dateRecordReq.Date)
 		if err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 
-		if err := DB.DayRecordCreate(id, date, dayRecordReq.Happiness); err != nil {
+		if err := DB.DayRecordCreate(id, date, dateRecordReq.Happiness); err != nil {
 			log.Println(err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -69,7 +69,7 @@ func DayRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 
-		var dayRecordReq DayRecordRequest
+		var dayRecordReq createDateRecordRequest
 		if err := json.NewDecoder(r.Body).Decode(&dayRecordReq); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
