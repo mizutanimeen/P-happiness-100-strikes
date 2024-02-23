@@ -29,6 +29,7 @@ func (a *App) restAPI() http.Handler {
 	router := chi.NewRouter()
 	router.Mount("/users", a.usersHandler())
 	router.Mount("/records", a.recordsHandler())
+	router.Mount("/machines", a.machinesHandler())
 	return router
 }
 
@@ -67,5 +68,14 @@ func (a *App) timeRecordsHandler() http.Handler {
 func (a *App) rPMRecordsHandler() http.Handler {
 	router := chi.NewRouter()
 	router.Get("/", api.RPMRecordsGet())
+	return router
+}
+
+func (a *App) machinesHandler() http.Handler {
+	router := chi.NewRouter()
+	router.Get("/", api.MachinesGet(a.DB))
+	router.Post("/", api.MachineCreate(a.DB))
+	router.Put("/", api.MachineUpdate(a.DB))
+	router.Delete("/", api.MachineDelete(a.DB))
 	return router
 }

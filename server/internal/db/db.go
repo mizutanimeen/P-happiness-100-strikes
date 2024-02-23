@@ -22,5 +22,12 @@ type DB interface {
 	TimeRecordCreate(userID string, time time.Time, investmentMoney int, recoveryMoney int) error
 	TimeRecordUpdate(id string, time time.Time, investmentMoney int, recoveryMoney int) error
 	TimeRecordDelete(id string) error
+
+	MachinesGet(userID string) ([]*model.Machine, error)
+	MachineGetByID(id string, userID string) (*model.Machine, error)
+	MachineCreate(userID string, name string, rate int) error
+	MachineUpdate(id string, name string, rate int) error
+	MachineDelete(id string) error
+
 	Close() error
 }
