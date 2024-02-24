@@ -1,17 +1,15 @@
 .accountBody {
-    width: auto;
-    height: 100%;
     text-align: center;
 }
 
-.accountBody h1 {
-    margin: 60px 0 50px 0;
+.accounth1 {
+    padding: 60px 0 50px 0;
+    margin: 0;
 }
 
 .accountForm {
+    width: 100%;
     display: block;
-    width: 80%;
-    max-width: 500px;
     margin: 30px auto;
     text-align: left;
 }
@@ -35,7 +33,7 @@
 
 .accountBody button {
     display: block;
-    width: 80%;
+    width: 100%;
     max-width: 500px;
     padding: 5px 0;
     margin: 10px auto;

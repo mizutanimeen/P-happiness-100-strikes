@@ -9,8 +9,10 @@ export function CreateRecord() {
     return (
         <div className="container">
             <BackHomeHeader />
-            <h1>記録作成</h1>
-            {selectDate}
+            <div className="contentBody">
+                <h1>記録作成</h1>
+                {selectDate}
+            </div >
         </div >
     )
 }

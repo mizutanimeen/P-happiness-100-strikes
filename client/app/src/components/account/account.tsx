@@ -52,9 +52,9 @@ export function Register(): JSX.Element {
     return (
         <>
             <div className="container">
-                <div className="accountBody">
-                    <BackHomeHeader />
-                    <h1>新規登録</h1>
+                <BackHomeHeader />
+                <div className="contentBody accountBody">
+                    <h1 className="accounth1">新規登録</h1>
                     <div className="accountForm">
                         <label>ユーザーID</label>
                         <input type="text" value={userID} onChange={(e) => setUserID(e.target.value)} />
@@ -111,8 +111,8 @@ export function Login(): JSX.Element {
     return (
         <>
             <div className="container">
-                <div className="accountBody">
-                    <BackHomeHeader />
+                <BackHomeHeader />
+                <div className="contentBody accountBody">
                     <h1>ログイン</h1>
                     <div className="accountForm">
                         <label>ユーザーID</label>

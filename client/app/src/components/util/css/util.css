@@ -2,3 +2,11 @@
     height: 100%;
     width: 100%;
 }
+
+.contentBody {
+    width: auto;
+    height: 90%;
+    width: 80%;
+    max-width: 500px;
+    margin: 0 auto;
+}
