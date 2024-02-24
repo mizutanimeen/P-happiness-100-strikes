@@ -7,7 +7,7 @@ import axios from 'axios';
 
     Redux
  */
-export const baseURL = 'http://localhost:3001';
+export const baseURL = 'http://localhost:3001'; // TODO: 本番環境では変更する localhost
 
 /*
 const UniversitiesPage= () => {

@@ -21,7 +21,7 @@ export function CalendarFooter(): JSX.Element {
                     console.log(result);
                 }
             }).catch((error) => {
-                if (error.response.status === 401) {
+                if (error?.response?.status === 401) {
                     setIsLogined(false);
                 } else {
                     console.log(error);
