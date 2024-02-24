@@ -1,17 +1,84 @@
+/* common */
 .footer {
     height: 8%;
     width: 100%;
+    display: flex;
 }
 
-.footer button {
+.footer>* {
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+/* Logout */
+.footer.logout button {
     height: 100%;
-    width: 50%;
-    border: 2px solid #000;
+    width: 100%;
     border-radius: 0;
     background: #fff;
+    color: black;
+    border: none;
 }
 
-.footer button:hover {
-    color: #fff;
-    background: #000;
+.footer.logout button:first-child {
+    border-right: 1px solid #DCDCDC;
+}
+
+.footer.logout button:hover {
+    background-color: orange;
+    color: white;
+}
+
+/* Login */
+.footer.login button {
+    border: none;
+    background: #fff;
+    margin: 0;
+    border-radius: 0;
+}
+
+.footer.login .account,
+.footer.login .plus {
+    height: 100%;
+    flex-basis: 20%;
+    border: none;
+    background: #fff;
+    font-size: 3em;
+}
+
+.footer.login .account button,
+.footer.login .plus button {
+    height: 100%;
+    width: 100%;
+}
+
+.footer.login .account svg,
+.footer.login .plus svg {
+    font-size: 3em
+}
+
+.footer.login .account button:hover,
+.footer.login .plus button:hover {
+    color: orange;
+}
+
+.footer.login .statistics {
+    flex-basis: 60%;
+    height: 100%;
+    border-left: 1px solid #DCDCDC;
+    border-right: 1px solid #DCDCDC;
+}
+
+.footer.login .statistics button {
+    height: 100%;
+    width: 100%;
+}
+
+.footer.login .statistics button:hover {
+    background-color: orange;
+    color: white;
 }

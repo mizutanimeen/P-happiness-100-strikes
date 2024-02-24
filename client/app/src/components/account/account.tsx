@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './css/account.css';
 import { BackHomeHeader } from '../header/header';
 import { useState } from 'react';
-import { RegisterRequest, LoginRequest } from '../axios/axios';
+import { RegisterRequest, LoginRequest } from '../axios/auth';
 import axios from 'axios';
 
 export function Register(): JSX.Element {

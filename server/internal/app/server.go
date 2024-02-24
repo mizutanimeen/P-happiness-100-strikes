@@ -22,6 +22,7 @@ func (a *App) ListenAndServe() error {
 	}))
 	router.Post("/register", api.RegisterHandler(a.DB, a.Session))
 	router.Post("/login", api.LoginHandler(a.DB, a.Session))
+	router.Get("/login/check", api.IsLoginHandler(a.Session))
 	router.Get("/logout", api.LogoutHandler())
 	router.Mount("/api/v1", api.WithAuth(a.restAPI(), a.Session))
 

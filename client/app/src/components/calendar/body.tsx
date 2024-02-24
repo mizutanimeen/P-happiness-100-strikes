@@ -3,6 +3,8 @@ import './css/body.css';
 import { format } from 'date-fns';
 import { useState } from "react";
 import { useSelector } from "../redux/store";
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios';
 
 export function getMonthDays(currentMonth: number): Date[][] {
     const month = new Date().getMonth() + currentMonth;
@@ -22,11 +24,20 @@ export function getMonthDays(currentMonth: number): Date[][] {
 
 export function CalendarBody(): JSX.Element {
     /* TODO:Date情報をキャッシュする */
-    const [currentMonthDays, setCurrentMonthDays] = useState<Date[][]>(getMonthDays(0));
+    const [currentMonthDates, setCurrentMonthDates] = useState<Date[][]>(getMonthDays(0));
     const currentMonthDiff = useSelector((state) => state.calendar.value);
 
+    const formatDate = (date: Date): string => {
+        return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1}-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
+    }
+
     useEffect(() => {
-        setCurrentMonthDays(getMonthDays(currentMonthDiff))
+        setCurrentMonthDates(getMonthDays(currentMonthDiff))
+
+        const start = formatDate(currentMonthDates[0][0]);
+        const end = formatDate(currentMonthDates[4][6]);
+
+        /* TanStack Query を用いて並列処理で実行し、キャッシュする */
     }, [currentMonthDiff]);
 
     return <>
@@ -42,17 +53,17 @@ export function CalendarBody(): JSX.Element {
                     <th>土</th>
                 </tr>
             </thead>
-            <TableBody currentMonthDays={currentMonthDays} />
+            <TableBody currentMonthDates={currentMonthDates} />
         </table>
     </ >
 }
 
-function TableBody(props: { currentMonthDays: Date[][] }): JSX.Element {
-    const currentMonthDays = props.currentMonthDays;
+function TableBody(props: { currentMonthDates: Date[][] }): JSX.Element {
+    const currentMonthDates = props.currentMonthDates;
     return <>
         <tbody>
             {
-                currentMonthDays.map((row: Date[], i: React.Key) => (
+                currentMonthDates.map((row: Date[], i: React.Key) => (
                     <tr key={i}>
                         {
                             row.map((day: Date, j: React.Key) => (

@@ -116,6 +116,27 @@ func LoginHandler(DB db.DB, s *session.Session) func(w http.ResponseWriter, r *h
 	}
 }
 
+func IsLoginHandler(s *session.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie(COOKIE_SESSION_NAME)
+		if err != nil {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// 認証
+		_, err = s.GetUserIDBySession(cookie.Value)
+		if err != nil {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Login successful"))
+	}
+}
+
 func LogoutHandler() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{

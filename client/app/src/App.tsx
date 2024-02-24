@@ -4,21 +4,26 @@ import { store } from './components/redux/store';
 import { Provider } from 'react-redux';
 import { Routes, BrowserRouter, Route } from "react-router-dom";
 import { Register, Login } from './components/account/account';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export default function App() {
   return (
     <>
-      <Div100vh>
-        <Provider store={store}>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Calendar />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-            </Routes>
-          </BrowserRouter>
-        </Provider>
-      </Div100vh>
+      <QueryClientProvider client={queryClient}>
+        <Div100vh>
+          <Provider store={store}>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Calendar />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+              </Routes>
+            </BrowserRouter>
+          </Provider>
+        </Div100vh>
+      </QueryClientProvider>
     </>
   );
 }
