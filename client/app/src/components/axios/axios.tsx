@@ -9,6 +9,14 @@ import axios from 'axios';
  */
 export const baseURL = 'http://localhost:3001';
 
+/*
+const UniversitiesPage= () => {
+  const [page, setPage] = useState(1);
+  const { data } = useQuery(
+    ["universitiesData", page],
+    () => getUniversities(page),
+  );
+*/
 
 
 

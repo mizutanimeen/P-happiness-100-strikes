@@ -124,6 +124,11 @@ func IsLoginHandler(s *session.Session) func(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
+		if cookie.Value == "" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
 		// 認証
 		_, err = s.GetUserIDBySession(cookie.Value)
 		if err != nil {
@@ -133,7 +138,7 @@ func IsLoginHandler(s *session.Session) func(w http.ResponseWriter, r *http.Requ
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Login successful"))
+		w.Write([]byte("Logined"))
 	}
 }
 

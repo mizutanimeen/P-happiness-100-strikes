@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import './css/footer.css';
 import { Link } from 'react-router-dom';
 import { IsLoginRequest } from '../axios/auth';
@@ -6,8 +6,8 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios';
 import { CiCirclePlus } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
-import { useDispatch } from "react-redux";
 
+// TODO: ログアウトしたときにフッターが変わらない
 export function CalendarFooter(): JSX.Element {
     const { data, isLoading } = useQuery({
         queryKey: ["logined"],
@@ -15,14 +15,13 @@ export function CalendarFooter(): JSX.Element {
             const data = await axios(IsLoginRequest)
             return data;
         },
-        staleTime: 0
+        staleTime: Infinity
     });
 
-    const status = data?.status;
-    if (!isLoading && status === 200) {
+    if (!isLoading && data?.status === 200) {
         return <>
             <div className="footer login">
-                <Link to="/" className="account"><button><MdAccountCircle /></button></Link>
+                <Link to="/account" className="account"><button><MdAccountCircle /></button></Link>
                 <Link to="/" className="statistics"><button>統計</button></Link>
                 <Link to="/records/create" className="plus"> <button> <CiCirclePlus /></button></Link>
             </div >

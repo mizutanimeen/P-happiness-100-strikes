@@ -3,8 +3,6 @@ import './css/body.css';
 import { format } from 'date-fns';
 import { useState } from "react";
 import { useSelector } from "../redux/store";
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios';
 import { useDispatch } from "react-redux";
 import { select } from "../redux/slice/calendar";
 import { formatDate } from '../util/util';
@@ -62,11 +60,11 @@ function TableBody(props: { currentMonthDates: Date[][] }): JSX.Element {
     return <>
         <tbody>
             {
-                currentMonthDates.map((row: Date[], i: React.Key) => (
+                currentMonthDates.map((row: Date[], i: number) => (
                     <tr key={i}>
                         {
-                            row.map((date: Date, j: React.Key) => (
-                                <CalendarDate date={date} k={j} />
+                            row.map((date: Date, j: number) => (
+                                <CalendarDate date={date} key={j} />
                             ))
                         }
                     </tr>
@@ -76,32 +74,32 @@ function TableBody(props: { currentMonthDates: Date[][] }): JSX.Element {
     </>
 }
 
-function CalendarDate(props: { date: Date, k: React.Key }): JSX.Element {
+function CalendarDate(props: { date: Date }): JSX.Element {
     const dispatch = useDispatch();
     const selectDate = (date: Date) => {
         dispatch(select(formatDate(date)));
     }
 
     const date = props.date;
-    const key = props.k;
-    return <td key={key} className={`date ${GetTodayClass(date)} ${GetSelectClass(date)}`} onClick={() => selectDate(date)}>
+    const fomatDate = formatDate(date);
+    return <td key={fomatDate} className={`date ${GetTodayClass(fomatDate)} ${GetSelectClass(fomatDate)}`} onClick={() => selectDate(date)}>
         <div>
             {format(date, "dd")}
         </div>
     </td>
 }
 
-function GetTodayClass(date: Date): string {
+function GetTodayClass(fomatDate: string): string {
     const today = new Date();
-    if (formatDate(date) === formatDate(today)) {
+    if (fomatDate === formatDate(today)) {
         return 'today';
     }
     return '';
 }
 
-function GetSelectClass(date: Date): string {
+function GetSelectClass(fomatDate: string): string {
     const selectedDate = useSelector((state) => state.selectDate.value);
-    if (selectedDate === formatDate(date)) {
+    if (selectedDate === fomatDate) {
         return 'selected';
     }
     return '';

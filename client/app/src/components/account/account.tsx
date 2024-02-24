@@ -1,10 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import './css/account.css';
 import { BackHomeHeader } from '../header/header';
-import { useState } from 'react';
-import { RegisterRequest, LoginRequest } from '../axios/auth';
+import { useEffect, useState } from 'react';
+import { RegisterRequest, LoginRequest, LogoutRequest } from '../axios/auth';
+import { UserGetRequest, User } from '../axios/user';
+import { IsLoginRequest } from '../axios/auth';
 import axios from 'axios';
 import "../util/css/util.css";
+import { useQuery } from '@tanstack/react-query'
 
 export function Register(): JSX.Element {
     const navigate = useNavigate();
@@ -44,6 +47,7 @@ export function Register(): JSX.Element {
                 // TODO: ステータスコードが他にあるか
             })
             .catch(function (error) {
+                console.log(error)
                 // TODO: エラーによってメッセージを変える
                 alert("ユーザーIDが既に存在しています。")
             });
@@ -123,6 +127,57 @@ export function Login(): JSX.Element {
                         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                     </div>
                     <button className={isActive()} onClick={() => loginClick()}>ログイン</button>
+                </div>
+            </div>
+        </>
+    )
+}
+
+export function Account(): JSX.Element {
+    const navigate = useNavigate();
+    const [user, setUser] = useState<User>({ id: "", password: "" })
+
+    const logoutClick = () => {
+        axios(LogoutRequest)
+            .then(function (response) {
+                if (response.status === 200) {
+                    navigate("/")
+                    return;
+                }
+                // TODO: ステータスコードが他にあるか
+            })
+            .catch(function (error) {
+                // TODO: エラーによってメッセージを変える
+                alert("ログアウトに失敗しました。")
+            });
+    }
+
+    useEffect(() => {
+        axios(UserGetRequest)
+            .then(function (response) {
+                if (response.status === 200) {
+                    setUser(response.data)
+                    return;
+                }
+                // TODO: ステータスコードが他にあるか
+            })
+            .catch(function (error) {
+                console.log(error)
+                alert(error)
+            })
+    }, []);
+
+    return (
+        <>
+            <div className="container">
+                <BackHomeHeader />
+                <div className="contentBody accountBody">
+                    <h1>アカウント情報</h1>
+                    <div className="accountForm">
+                        <label>ユーザーID</label>
+                        <div>{user.id}</div>
+                    </div>
+                    <button onClick={() => logoutClick()}>ログアウト</button>
                 </div>
             </div>
         </>
