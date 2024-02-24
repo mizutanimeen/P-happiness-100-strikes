@@ -4,7 +4,7 @@
     border-collapse: collapse;
 }
 
-.day {
+.date {
     border: solid 1px;
     border-color: #DCDCDC;
     text-align: center;
@@ -14,6 +14,10 @@
     margin: 0;
 }
 
-.currentDay {
-    background-color: #ebffcc;
+.today {
+    background-color: rgb(253, 241, 219);
+}
+
+.selected {
+    outline: 1px solid orange;
 }

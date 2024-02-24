@@ -1,22 +1,22 @@
 import React from "react";
 import './css/header.css';
 import { useDispatch } from "react-redux";
-import { increment, decrement } from "../redux/slice";
+import { increment, decrement } from "../redux/slice/calendar";
 import { useSelector } from "../redux/store";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 
 export function CalendarHeader(): React.ReactElement {
-    const currentMonthDiff = useSelector((state) => state.calendar.value);
+    const currentMonthDiff = useSelector((state) => state.monthDiff.value);
     const currentYearMonth = yearMonthToString(currentMonthDiff);
-    const currentMonthDispatch = useDispatch();
+    const dispatch = useDispatch();
 
     return <>
         <div className="header">
             <div>{currentYearMonth}</div>
             <div>+10000円</div> {/* serverで計算する */}
-            <button onClick={() => currentMonthDispatch(decrement())}><FaArrowLeft /></button>
-            <button onClick={() => currentMonthDispatch(increment())}><FaArrowRight /></button>
+            <button onClick={() => dispatch(decrement())}><FaArrowLeft /></button>
+            <button onClick={() => dispatch(increment())}><FaArrowRight /></button>
         </div>
     </>
 }

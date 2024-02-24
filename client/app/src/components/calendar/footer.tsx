@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios';
 import { CiCirclePlus } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
+import { useDispatch } from "react-redux";
 
 export function CalendarFooter(): JSX.Element {
     const { data, isLoading } = useQuery({
@@ -23,8 +24,8 @@ export function CalendarFooter(): JSX.Element {
             <div className="footer login">
                 <Link to="/" className="account"><button><MdAccountCircle /></button></Link>
                 <Link to="/" className="statistics"><button>統計</button></Link>
-                <Link to="/" className="plus"><button><CiCirclePlus /></button></Link>
-            </div>
+                <Link to="/records/create" className="plus"> <button> <CiCirclePlus /></button></Link>
+            </div >
         </>
     } else {
         return <>
@@ -35,3 +36,5 @@ export function CalendarFooter(): JSX.Element {
         </>
     }
 }
+
+

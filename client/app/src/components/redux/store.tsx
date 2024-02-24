@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import calendarCurrentMonthDiffSlice from './slice';
+import { monthDiffReducer, selectDateReducer } from './slice/calendar';
 import { useSelector as rawUseSelector, TypedUseSelectorHook } from 'react-redux';
 
 export const store = configureStore({
     reducer: {
-        calendar: calendarCurrentMonthDiffSlice,
+        monthDiff: monthDiffReducer,
+        selectDate: selectDateReducer,
     },
 });
 

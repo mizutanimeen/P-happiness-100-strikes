@@ -5,34 +5,33 @@ import { useState } from "react";
 import { useSelector } from "../redux/store";
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios';
+import { useDispatch } from "react-redux";
+import { select } from "../redux/slice/calendar";
+import { formatDate } from '../util/util';
 
-export function getMonthDays(currentMonth: number): Date[][] {
+export function getMonthDates(currentMonth: number): Date[][] {
     const month = new Date().getMonth() + currentMonth;
     const currentYear = new Date().getFullYear();
     const firstDOW = new Date(currentYear, month, 1).getDay();
     // firstDOW = 0 When it is Sunday
-    let currentDay = 0 - firstDOW;
+    let currentDate = 0 - firstDOW;
     // 5 weeks, 7 days
-    const daysMatrix = new Array<Date[]>(5).fill([]).map(() => {
+    const datesMatrix = new Array<Date[]>(5).fill([]).map(() => {
         return new Array<Date>(7).fill(new Date()).map(() => {
-            currentDay++;
-            return new Date(currentYear, month, currentDay);
+            currentDate++;
+            return new Date(currentYear, month, currentDate);
         });
     });
-    return daysMatrix;
+    return datesMatrix;
 }
 
 export function CalendarBody(): JSX.Element {
     /* TODO:Date情報をキャッシュする */
-    const [currentMonthDates, setCurrentMonthDates] = useState<Date[][]>(getMonthDays(0));
-    const currentMonthDiff = useSelector((state) => state.calendar.value);
-
-    const formatDate = (date: Date): string => {
-        return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1}-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
-    }
+    const [currentMonthDates, setCurrentMonthDates] = useState<Date[][]>(getMonthDates(0));
+    const currentMonthDiff = useSelector((state) => state.monthDiff.value);
 
     useEffect(() => {
-        setCurrentMonthDates(getMonthDays(currentMonthDiff))
+        setCurrentMonthDates(getMonthDates(currentMonthDiff))
 
         const start = formatDate(currentMonthDates[0][0]);
         const end = formatDate(currentMonthDates[4][6]);
@@ -66,10 +65,8 @@ function TableBody(props: { currentMonthDates: Date[][] }): JSX.Element {
                 currentMonthDates.map((row: Date[], i: React.Key) => (
                     <tr key={i}>
                         {
-                            row.map((day: Date, j: React.Key) => (
-                                < td key={j} className={`day ${getCurrentDayClass(day)}`}>
-                                    {format(day, "dd")}
-                                </td>
+                            row.map((date: Date, j: React.Key) => (
+                                <CalendarDate date={date} k={j} />
                             ))
                         }
                     </tr>
@@ -79,12 +76,33 @@ function TableBody(props: { currentMonthDates: Date[][] }): JSX.Element {
     </>
 }
 
-function getCurrentDayClass(today: Date): string {
-    const currentDate = new Date();
-    if (today.getDate() === currentDate.getDate() &&
-        today.getMonth() === currentDate.getMonth() &&
-        today.getFullYear() === currentDate.getFullYear()) {
-        return 'currentDay';
+function CalendarDate(props: { date: Date, k: React.Key }): JSX.Element {
+    const dispatch = useDispatch();
+    const selectDate = (date: Date) => {
+        dispatch(select(formatDate(date)));
+    }
+
+    const date = props.date;
+    const key = props.k;
+    return <td key={key} className={`date ${GetTodayClass(date)} ${GetSelectClass(date)}`} onClick={() => selectDate(date)}>
+        <div>
+            {format(date, "dd")}
+        </div>
+    </td>
+}
+
+function GetTodayClass(date: Date): string {
+    const today = new Date();
+    if (formatDate(date) === formatDate(today)) {
+        return 'today';
+    }
+    return '';
+}
+
+function GetSelectClass(date: Date): string {
+    const selectedDate = useSelector((state) => state.selectDate.value);
+    if (selectedDate === formatDate(date)) {
+        return 'selected';
     }
     return '';
 }

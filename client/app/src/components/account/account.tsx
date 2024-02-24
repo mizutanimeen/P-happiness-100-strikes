@@ -4,6 +4,7 @@ import { BackHomeHeader } from '../header/header';
 import { useState } from 'react';
 import { RegisterRequest, LoginRequest } from '../axios/auth';
 import axios from 'axios';
+import "../util/css/util.css";
 
 export function Register(): JSX.Element {
     const navigate = useNavigate();
@@ -50,7 +51,7 @@ export function Register(): JSX.Element {
 
     return (
         <>
-            <div className="accountContainer">
+            <div className="container">
                 <div className="accountBody">
                     <BackHomeHeader />
                     <h1>新規登録</h1>
@@ -109,7 +110,7 @@ export function Login(): JSX.Element {
 
     return (
         <>
-            <div className="accountContainer">
+            <div className="container">
                 <div className="accountBody">
                     <BackHomeHeader />
                     <h1>ログイン</h1>
