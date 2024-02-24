@@ -5,10 +5,10 @@ import "time"
 // TODO: Jsonタグを追加する or リスポンス用の構造体を作成する
 
 type User struct {
-	ID        string
-	Password  string
-	Create_at time.Time
-	Update_at time.Time
+	ID        string    `json:"id"`
+	Password  string    `json:"password"`
+	Create_at time.Time `json:"create_at"`
+	Update_at time.Time `json:"update_at"`
 }
 
 type DateRecord struct {

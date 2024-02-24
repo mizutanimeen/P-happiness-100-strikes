@@ -10,6 +10,7 @@ if (rootDoc === null) {
 
 const root = ReactDOM.createRoot(rootDoc);
 root.render(
+  // TODO: StrictMode 外す
   <React.StrictMode>
     <App />
   </React.StrictMode>

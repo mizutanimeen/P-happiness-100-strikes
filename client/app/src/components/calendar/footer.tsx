@@ -1,24 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import './css/footer.css';
 import { Link } from 'react-router-dom';
-import { IsLoginRequest } from '../axios/auth';
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios';
 import { CiCirclePlus } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
+import axios from 'axios';
+import { IsLoginRequest } from '../axios/auth';
 
 // TODO: ログアウトしたときにフッターが変わらない
 export function CalendarFooter(): JSX.Element {
-    const { data, isLoading } = useQuery({
-        queryKey: ["logined"],
-        queryFn: async () => {
-            const data = await axios(IsLoginRequest)
-            return data;
-        },
-        staleTime: Infinity
-    });
+    const [isLoading, setIsLoading] = useState(true);
+    const [isLogined, setIsLogined] = useState(false);
 
-    if (!isLoading && data?.status === 200) {
+    useEffect(() => {
+        setIsLoading(true);
+        const check = async () => {
+            await axios(IsLoginRequest).then((result) => {
+                if (result.status === 200) {
+                    setIsLogined(true);
+                } else {
+                    console.log(result);
+                }
+            }).catch((error) => {
+                if (error.response.status === 401) {
+                    setIsLogined(false);
+                } else {
+                    console.log(error);
+                }
+            });
+
+            setIsLoading(false);
+        };
+        check();
+    }, []);
+
+    if (!isLoading && isLogined) {
         return <>
             <div className="footer login">
                 <Link to="/account" className="account"><button><MdAccountCircle /></button></Link>

@@ -1,13 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './css/account.css';
 import { BackHomeHeader } from '../header/header';
-import { useEffect, useState } from 'react';
-import { RegisterRequest, LoginRequest, LogoutRequest } from '../axios/auth';
-import { UserGetRequest, User } from '../axios/user';
-import { IsLoginRequest } from '../axios/auth';
+import { useEffect, useState, useRef } from 'react';
+import { RegisterRequest, LoginRequest, LogoutRequest, IsLoginRequest } from '../axios/auth';
+import { User, UserGetRequest } from '../axios/user';
 import axios from 'axios';
 import "../util/css/util.css";
-import { useQuery } from '@tanstack/react-query'
 
 export function Register(): JSX.Element {
     const navigate = useNavigate();
@@ -135,49 +133,71 @@ export function Login(): JSX.Element {
 
 export function Account(): JSX.Element {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState<User>({ id: "", password: "" })
+    const firstCallDone = useRef(false);
 
-    const logoutClick = () => {
+    useEffect(() => {
+        const userGet = async () => {
+            if (isLoading) {
+                return;
+            }
+            setIsLoading(true);
+            await axios(UserGetRequest).then((result) => {
+                if (result.status === 200) {
+                    setUser(result.data);
+                }
+                console.log(result);
+            }).catch((error) => {
+                if (error.response.status === 401) {
+                    navigate("/login");
+                    return;
+                }
+                console.log(error);
+            });
+
+            setIsLoading(false);
+        };
+
+        // strict modeのための対策
+        if (!firstCallDone.current) {
+            firstCallDone.current = true;
+            userGet();
+        }
+    }, []);
+
+    const logout = () => {
         axios(LogoutRequest)
             .then(function (response) {
                 if (response.status === 200) {
                     navigate("/")
                     return;
                 }
-                // TODO: ステータスコードが他にあるか
+                console.log(response);
             })
             .catch(function (error) {
-                // TODO: エラーによってメッセージを変える
                 alert("ログアウトに失敗しました。")
+                console.log(error);
             });
     }
-
-    useEffect(() => {
-        axios(UserGetRequest)
-            .then(function (response) {
-                if (response.status === 200) {
-                    setUser(response.data)
-                    return;
-                }
-                // TODO: ステータスコードが他にあるか
-            })
-            .catch(function (error) {
-                console.log(error)
-                alert(error)
-            })
-    }, []);
 
     return (
         <>
             <div className="container">
                 <BackHomeHeader />
                 <div className="contentBody accountBody">
-                    <h1>アカウント情報</h1>
-                    <div className="accountForm">
-                        <label>ユーザーID</label>
-                        <div>{user.id}</div>
-                    </div>
-                    <button onClick={() => logoutClick()}>ログアウト</button>
+                    {
+                        (isLoading) ?
+                            <>Loading....</>
+                            : <>
+                                <h1>アカウント情報</h1>
+                                <div className="accountForm">
+                                    <label>ユーザーID</label>
+                                    <div>{user.id}</div>
+                                </div>
+                                <button onClick={() => logout()}>ログアウト</button>
+                            </>
+                    }
                 </div>
             </div>
         </>
