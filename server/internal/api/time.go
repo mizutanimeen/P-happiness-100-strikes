@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db"
 )
 
@@ -28,6 +29,28 @@ func TimeRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(timeRecords)
+	}
+}
+
+func TimeRecordsGetByID(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.Context().Value(CK_USERID).(string)
+
+		timeRecordID := chi.URLParam(r, "id")
+
+		timeRecord, err := DB.TimeRecordGetByID(timeRecordID, id)
+		if err != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if timeRecord == nil {
+			http.Error(w, "Record not found", http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(timeRecord)
 	}
 }
 
@@ -68,7 +91,7 @@ func TimeRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 }
 
 type updateTimeRecordRequest struct {
-	ID              string `json:"time_record_id"`
+	ID              string `json:"id"`
 	DateTime        string `json:"date_time"`
 	InvestmentMoney int    `json:"investment_money"`
 	RecoveryMoney   int    `json:"recovery_money"`

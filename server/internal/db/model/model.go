@@ -21,13 +21,13 @@ type DateRecord struct {
 }
 
 type TimeRecord struct {
-	ID              string
-	UserID          string
-	Time            time.Time
-	InvestmentMoney int
-	RecoveryMoney   int
-	Create_at       time.Time
-	Update_at       time.Time
+	ID              string    `json:"id"`
+	UserID          string    `json:"user_id"`
+	Time            time.Time `json:"date_time"`
+	InvestmentMoney int       `json:"investment_money"`
+	RecoveryMoney   int       `json:"recovery_money"`
+	Create_at       time.Time `json:"create_at"`
+	Update_at       time.Time `json:"update_at"`
 }
 
 type Machine struct {

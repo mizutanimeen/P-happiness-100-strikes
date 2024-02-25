@@ -5,9 +5,10 @@ import { CiCirclePlus } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
 import axios from 'axios';
 import { IsLoginRequest } from '../axios/auth';
-import { TimeRecordCreateRequest, CreateTimeRecord } from '../axios/time';
+import { TimeRecordCreateRequest, TimeRecordCreate } from '../axios/time';
 import { formatDate, formatTime } from '../util/util';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from "../redux/store";
 
 // TODO: ログアウトしたときにフッターが変わらない
 export function CalendarFooter(): JSX.Element {
@@ -23,23 +24,24 @@ export function CalendarFooter(): JSX.Element {
                 } else {
                     console.log(result);
                 }
+                setIsLoading(false);
             }).catch((error) => {
                 if (error?.response?.status === 401) {
                     setIsLogined(false);
                 }
                 console.log(error);
+                setIsLoading(false);
             });
-
-            setIsLoading(false);
         };
         check();
     }, []);
 
     const navigate = useNavigate();
+    const selectDate: string = useSelector((state) => state.selectDate.value);
     const createTimeRecord = () => {
         const now = new Date();
-        const date: string = formatDate(now) + " " + formatTime(now);
-        const data: CreateTimeRecord = {
+        const date: string = selectDate + " " + formatTime(now);
+        const data: TimeRecordCreate = {
             date_time: date,
             investment_money: 0,
             recovery_money: 0

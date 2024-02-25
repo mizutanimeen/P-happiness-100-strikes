@@ -1,27 +1,74 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "../redux/store";
 import { BackHomeHeader } from "../header/header";
-import { formatTime } from "../util/util";
+import { formatDate, formatTime } from "../util/util";
 import "./css/record.css";
 import "../util/css/util.css";
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { TimeRecordGetRequest } from "../axios/time";
+import { useRef } from "react";
+import { TimeRecordGet } from "../axios/time";
+import { TimeRecordUpdateRequest, TimeRecordUpdate } from "../axios/time";
 
 export function DetailRecord() {
+    const navigate = useNavigate();
     const selectDate = useSelector((state) => state.selectDate.value);
     const [dateTime, setDateTime] = useState(selectDate + " " + formatTime(new Date()));
     const [investmentMoney, setInvestmentMoney] = useState(0);
     const [recoveryMoney, setRecoveryMoney] = useState(0);
     const step = 100;
     const { id } = useParams();
+    const firstCallDone = useRef(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [timeRecords, setTimeRecords] = useState<TimeRecordGet>();
 
-    const postRecord = () => {
-        if (investmentMoney < 0 || recoveryMoney < 0) {
-            alert("投資額と回収額は0以上で入力してください");
+    useEffect(() => {
+        if (id === undefined || id === "undefined" || id === "") {
+            navigate("/")
             return;
         }
-    }
+
+        const timeRecordGet = async () => {
+            if (isLoading) {
+                return;
+            }
+            setIsLoading(true);
+            await axios(TimeRecordGetRequest(id)).then((result) => {
+                if (result.status === 200) {
+                    setTimeRecords(result.data);
+                } else {
+                    console.log(result);
+                }
+                setIsLoading(false);
+            }).catch((error) => {
+                if (error.response.status === 401) {
+                    navigate("/");
+                    return;
+                }
+                console.log(error);
+                setIsLoading(false);
+            });
+        };
+
+        // strict modeのための対策
+        if (!firstCallDone.current) {
+            firstCallDone.current = true;
+            timeRecordGet();
+        }
+    }, [id]);
+
+    useEffect(() => {
+        if (timeRecords === undefined) {
+            return;
+        }
+        setDateTime(timeRecords.date_time.replace("T", " ").replace("Z", ""));
+        setInvestmentMoney(timeRecords.investment_money);
+        setRecoveryMoney(timeRecords.recovery_money);
+    }, [timeRecords]);
 
     const setInputInvestmentMoney = (value: string) => {
         let n = Number(value);
@@ -44,42 +91,79 @@ export function DetailRecord() {
         setRecoveryMoney(n);
     }
 
+    const updateTimeRecord = () => {
+        if (investmentMoney < 0 || recoveryMoney < 0) {
+            alert("投資額と回収額は0以上で入力してください");
+            return;
+        }
+        if (id === undefined || id === "undefined" || id === "") {
+            navigate("/")
+            return;
+        }
+
+        const data: TimeRecordUpdate = {
+            id: id,
+            date_time: dateTime,
+            investment_money: investmentMoney,
+            recovery_money: recoveryMoney
+        }
+
+        axios(TimeRecordUpdateRequest(data)).then((result) => {
+            if (result.status === 200) {
+                alert("更新しました");
+            } else {
+                console.log(result);
+            }
+        }).catch((error) => {
+            console.log(error);
+        }
+        );
+    }
+
+
     return (
         <div className="container">
             <BackHomeHeader />
-            <div className="recordContainer contentBody">
-                <h1>記録作成</h1>
-                <div className="dateBox">
-                    <input type="datetime-local" value={dateTime} onChange={(e) => setDateTime(e.target.value)} />
-                </div>
-                <div>
-                    <h2>回転数記録</h2>
-                    <div>
-                        {
-                            Array(5).fill(1).map((data: number, i: number) => (
-                                <RPMRecord key={i} id={i + 1} />
-                            ))
-                        }
-                    </div>
-                    <button className="button">回転数記録を追加</button>
-                </div>
-                <div className="incomeExpendContainer">
-                    <h2>収支記録</h2>
-                    <div className="incomeExpendBox">
-                        <label>投資額</label>
-                        <input className="box" type="text" value={investmentMoney} onChange={(e) => setInputInvestmentMoney(e.target.value)} />
-                        <input className="bar" type="range" value={investmentMoney} step={step} min={0} max={200000} onChange={(e) => setInvestmentMoney(Number(e.target.value))} />
-                    </div>
-                    <div className="incomeExpendBox">
-                        <label>回収額</label>
-                        <input className="box" type="text" value={recoveryMoney} onChange={(e) => setInputRecoveryMoney(e.target.value)} />
-                        <input className="bar" type="range" value={recoveryMoney} step={step} min={0} max={200000} onChange={(e) => setRecoveryMoney(Number(e.target.value))} />
-                    </div>
-                </div>
-                <div className="recordButton">
-                    <button className="button" onClick={postRecord}>記録</button>
-                </div>
-            </div >
+            {
+                (isLoading) ?
+                    <>
+                        Loading....
+                    </>
+                    :
+                    <div className="recordContainer contentBody">
+                        <h1>記録作成</h1>
+                        <div className="dateBox">
+                            <input type="datetime-local" value={dateTime} onChange={(e) => setDateTime(e.target.value)} />
+                        </div>
+                        <div>
+                            <h2>回転数記録</h2>
+                            <div>
+                                {
+                                    Array(5).fill(1).map((data: number, i: number) => (
+                                        <RPMRecord key={i} id={i + 1} />
+                                    ))
+                                }
+                            </div>
+                            <button className="button">回転数記録を追加</button>
+                        </div>
+                        <div className="incomeExpendContainer">
+                            <h2>収支記録</h2>
+                            <div className="incomeExpendBox">
+                                <label>投資額</label>
+                                <input className="box" type="text" value={investmentMoney} onChange={(e) => setInputInvestmentMoney(e.target.value)} />
+                                <input className="bar" type="range" value={investmentMoney} step={step} min={0} max={200000} onChange={(e) => setInvestmentMoney(Number(e.target.value))} />
+                            </div>
+                            <div className="incomeExpendBox">
+                                <label>回収額</label>
+                                <input className="box" type="text" value={recoveryMoney} onChange={(e) => setInputRecoveryMoney(e.target.value)} />
+                                <input className="bar" type="range" value={recoveryMoney} step={step} min={0} max={200000} onChange={(e) => setRecoveryMoney(Number(e.target.value))} />
+                            </div>
+                        </div>
+                        <div className="recordButton">
+                            <button className="button" onClick={updateTimeRecord}>更新</button>
+                        </div>
+                    </div >
+            }
         </div >
     )
 }

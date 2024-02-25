@@ -146,17 +146,18 @@ export function Account(): JSX.Element {
             await axios(UserGetRequest).then((result) => {
                 if (result.status === 200) {
                     setUser(result.data);
+                } else {
+                    console.log(result);
                 }
-                console.log(result);
+                setIsLoading(false);
             }).catch((error) => {
                 if (error.response.status === 401) {
                     navigate("/login");
                     return;
                 }
                 console.log(error);
+                setIsLoading(false);
             });
-
-            setIsLoading(false);
         };
 
         // strict modeのための対策
