@@ -31,8 +31,8 @@ type DB interface {
 
 	RPMRecordsGet(timeRecordID string, userID string) ([]*model.RPMRecord, error)
 	RPMRecordGetByID(id string, timeRecordID string, userID string) (*model.RPMRecord, error)
-	RPMRecordCreate(timeRecordID string, userID string, investmentMoney int, investmentBall int, startRPM int, endRPM int, machineID string) error
-	RPMRecordUpdate(id string, investmentMoney int, investmentBall int, startRPM int, endRPM int, machineID string) error
+	RPMRecordCreate(timeRecordID string, userID string, investmentMoney int, investmentBall int, startRPM int, endRPM int, machineID int) error
+	RPMRecordUpdate(id string, investmentMoney int, investmentBall int, startRPM int, endRPM int, machineID int) error
 	RPMRecordDelete(id string) error
 
 	Close() error

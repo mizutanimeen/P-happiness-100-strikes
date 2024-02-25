@@ -40,13 +40,14 @@ type Machine struct {
 }
 
 type RPMRecord struct {
-	ID              string
-	TimeRecordID    string
-	InvestmentMoney int
-	InvestmentBall  int
-	StartRPM        int
-	EndRPM          int
-	MachineID       string
-	Create_at       time.Time
-	Update_at       time.Time
+	ID              string    `json:"id"`
+	TimeRecordID    int       `json:"time_record_id"`
+	UserID          string    `json:"user_id"`
+	InvestmentMoney int       `json:"investment_money"`
+	InvestmentBall  int       `json:"investment_ball"`
+	StartRPM        int       `json:"start_rpm"`
+	EndRPM          int       `json:"end_rpm"`
+	MachineID       int       `json:"machine_id"`
+	Create_at       time.Time `json:"create_at"`
+	Update_at       time.Time `json:"update_at"`
 }

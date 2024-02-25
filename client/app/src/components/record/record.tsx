@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "../redux/store";
 import { BackHomeHeader } from "../header/header";
 import { formatDate, formatTime } from "../util/util";
-import "./css/record.css";
-import "../util/css/util.css";
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { TimeRecordGetRequest } from "../axios/time";
-import { useRef } from "react";
-import { TimeRecordGet } from "../axios/time";
-import { TimeRecordUpdateRequest, TimeRecordUpdate } from "../axios/time";
+import { TimeRecordGetRequest, TimeRecordGet, TimeRecordUpdateRequest, TimeRecordUpdate } from "../axios/time";
+import "./css/record.css";
+import "../util/css/util.css";
+import { RPMRecordCreateRequest, RPMRecordCreate, RPMRecordGet, RPMRecordGetRequest } from "../axios/rpm";
 
 export function DetailRecord() {
     const navigate = useNavigate();
@@ -25,39 +23,66 @@ export function DetailRecord() {
     const firstCallDone = useRef(false);
     const [isLoading, setIsLoading] = useState(false);
     const [timeRecords, setTimeRecords] = useState<TimeRecordGet>();
+    const [rpmRecords, setRPMRecords] = useState<RPMRecordGet[]>();
+    const [rpmLoading, setRPMLoading] = useState(false);
 
-    useEffect(() => {
+    const timeRecordGet = async () => {
+        if (isLoading) {
+            return;
+        }
         if (id === undefined || id === "undefined" || id === "") {
             navigate("/")
             return;
         }
-
-        const timeRecordGet = async () => {
-            if (isLoading) {
+        setIsLoading(true);
+        await axios(TimeRecordGetRequest(id)).then((result) => {
+            if (result.status === 200) {
+                setTimeRecords(result.data);
+            } else {
+                console.log(result);
+            }
+            setIsLoading(false);
+        }).catch((error) => {
+            if (error.response.status === 401) {
+                navigate("/");
                 return;
             }
-            setIsLoading(true);
-            await axios(TimeRecordGetRequest(id)).then((result) => {
-                if (result.status === 200) {
-                    setTimeRecords(result.data);
-                } else {
-                    console.log(result);
-                }
-                setIsLoading(false);
-            }).catch((error) => {
-                if (error.response.status === 401) {
-                    navigate("/");
-                    return;
-                }
-                console.log(error);
-                setIsLoading(false);
-            });
-        };
+            console.log(error);
+            setIsLoading(false);
+        });
+    };
 
+    const rpmRecordGet = async () => {
+        if (rpmLoading) {
+            return;
+        }
+        if (id === undefined || id === "undefined" || id === "") {
+            navigate("/")
+            return;
+        }
+        setRPMLoading(true);
+        await axios(RPMRecordGetRequest(id)).then((result) => {
+            if (result.status === 200) {
+                setRPMRecords(result.data);
+            } else {
+                console.log(result);
+            }
+            setRPMLoading(false);
+        }).catch((error) => {
+            if (error.response.status === 401) {
+                navigate("/");
+            }
+            console.log(error);
+            setRPMLoading(false);
+        });
+    };
+
+    useEffect(() => {
         // strict modeのための対策
         if (!firstCallDone.current) {
             firstCallDone.current = true;
             timeRecordGet();
+            rpmRecordGet();
         }
     }, [id]);
 
@@ -90,7 +115,6 @@ export function DetailRecord() {
         }
         setRecoveryMoney(n);
     }
-
     const updateTimeRecord = () => {
         if (investmentMoney < 0 || recoveryMoney < 0) {
             alert("投資額と回収額は0以上で入力してください");
@@ -119,7 +143,37 @@ export function DetailRecord() {
         }
         );
     }
+    const createRPMRecord = () => {
+        if (id === undefined || id === "undefined" || id === "") {
+            navigate("/")
+            return;
+        }
 
+        const data: RPMRecordCreate = {
+            investment_money: 0,
+            investment_ball: 0,
+            start_rpm: 0,
+            end_rpm: 0,
+            machine_id: 0,
+        }
+
+        const createRPM = async () => {
+            await axios(RPMRecordCreateRequest(id, data)).then((result) => {
+                if (result.status === 201) {
+                    rpmRecordGet();
+                } else {
+                    console.log(result);
+                }
+            }).catch((error) => {
+                if (error.response.status === 401) {
+                    navigate("/");
+                    return;
+                }
+                console.log(error);
+            });
+        };
+        createRPM();
+    }
 
     return (
         <div className="container">
@@ -139,12 +193,12 @@ export function DetailRecord() {
                             <h2>回転数記録</h2>
                             <div>
                                 {
-                                    Array(5).fill(1).map((data: number, i: number) => (
+                                    rpmRecords?.map((data: RPMRecordGet, i: number) => (
                                         <RPMRecord key={i} id={i + 1} />
                                     ))
                                 }
                             </div>
-                            <button className="button">回転数記録を追加</button>
+                            <button className="button" onClick={createRPMRecord}>回転数記録を追加</button>
                         </div>
                         <div className="incomeExpendContainer">
                             <h2>収支記録</h2>

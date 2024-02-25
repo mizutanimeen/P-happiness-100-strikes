@@ -28,8 +28,9 @@ export function CalendarFooter(): JSX.Element {
             }).catch((error) => {
                 if (error?.response?.status === 401) {
                     setIsLogined(false);
+                } else {
+                    console.log(error);
                 }
-                console.log(error);
                 setIsLoading(false);
             });
         };

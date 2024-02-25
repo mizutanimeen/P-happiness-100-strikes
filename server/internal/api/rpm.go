@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -14,9 +13,6 @@ func RPMRecordsGet(db db.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID := r.Context().Value(CK_USERID).(string)
 		timeRecordID := chi.URLParam(r, "times_id")
-
-		log.Println(r)
-		log.Println("timeRecordID", timeRecordID)
 
 		rpmRecords, err := db.RPMRecordsGet(timeRecordID, userID)
 		if err != nil {
@@ -34,11 +30,11 @@ func RPMRecordsGet(db db.DB) http.HandlerFunc {
 }
 
 type createRPMRecordRequest struct {
-	InvestmentMoney int    `json:"investment_money"`
-	InvestmentBall  int    `json:"investment_ball"`
-	StartRPM        int    `json:"start_rpm"`
-	EndRPM          int    `json:"end_rpm"`
-	MachineID       string `json:"machine_id"`
+	InvestmentMoney int `json:"investment_money"`
+	InvestmentBall  int `json:"investment_ball"`
+	StartRPM        int `json:"start_rpm"`
+	EndRPM          int `json:"end_rpm"`
+	MachineID       int `json:"machine_id"`
 }
 
 func RPMRecordCreate(db db.DB) http.HandlerFunc {
@@ -70,7 +66,7 @@ type updateRPMRecordRequest struct {
 	InvestmentBall  int    `json:"investment_ball"`
 	StartRPM        int    `json:"start_rpm"`
 	EndRPM          int    `json:"end_rpm"`
-	MachineID       string `json:"machine_id"`
+	MachineID       int    `json:"machine_id"`
 }
 
 // TODO: Updateをもっと軽量化する。 回転数追加で頻繁に更新されるため
