@@ -52,17 +52,22 @@ func (s *Mysql) TimeRecordGetByID(id string, userID string) (*model.TimeRecord, 
 	return &timeRecord, nil
 }
 
-func (s *Mysql) TimeRecordCreate(userID string, time time.Time, investmentMoney int, recoveryMoney int) error {
+func (s *Mysql) TimeRecordCreate(userID string, time time.Time, investmentMoney int, recoveryMoney int) (int64, error) {
 	query := fmt.Sprintf("INSERT INTO %s(%s, %s, %s, %s) VALUES(?,?,?,?)", timeRecordTable, timeRecordUserID, timeRecordTime, timeRecordInvestmentMoney, timeRecordRecoveryMoney)
 	insert, err := s.DB.Prepare(query)
 	if err != nil {
-		return fmt.Errorf("error prepare: %w", err)
+		return -1, fmt.Errorf("error prepare: %w", err)
 	}
 
-	if _, err := insert.Exec(userID, time, investmentMoney, recoveryMoney); err != nil {
-		return fmt.Errorf("error insert: %w", err)
+	r, err := insert.Exec(userID, time, investmentMoney, recoveryMoney)
+	if err != nil {
+		return -1, fmt.Errorf("error insert: %w", err)
 	}
-	return nil
+	id, err := r.LastInsertId()
+	if err != nil {
+		return -1, fmt.Errorf("error last insert id: %w", err)
+	}
+	return id, nil
 }
 
 func (s *Mysql) TimeRecordUpdate(id string, time time.Time, investmentMoney int, recoveryMoney int) error {

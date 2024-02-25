@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -38,7 +39,7 @@ type createTimeRecordRequest struct {
 
 func TimeRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		var timeRecordReq createTimeRecordRequest
 		if err := json.NewDecoder(r.Body).Decode(&timeRecordReq); err != nil {
@@ -53,14 +54,16 @@ func TimeRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := DB.TimeRecordCreate(id, dateTime, timeRecordReq.InvestmentMoney, timeRecordReq.RecoveryMoney); err != nil {
+		id, err := DB.TimeRecordCreate(userID, dateTime, timeRecordReq.InvestmentMoney, timeRecordReq.RecoveryMoney)
+		if err != nil {
 			http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{"message":"created"}`))
+		text := fmt.Sprintf(`{"id":%d,"message":"created"}`, id)
+		w.Write([]byte(text))
 	}
 }
 

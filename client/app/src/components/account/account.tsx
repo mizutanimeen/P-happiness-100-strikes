@@ -16,9 +16,9 @@ export function Register(): JSX.Element {
 
     const isActive = (): string => {
         if (userID && password && confirmPassword) {
-            return "accountActive";
+            return "Active";
         } else {
-            return "accountInactive";
+            return "Inactive";
         }
     }
 
@@ -70,7 +70,7 @@ export function Register(): JSX.Element {
                         <label>確認用パスワード</label>
                         <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                     </div>
-                    <button className={isActive()} onClick={() => registerClick()}>登録</button>
+                    <button className={`button ${isActive()}`} onClick={() => registerClick()}>登録</button>
                 </div>
             </div>
         </>
@@ -85,9 +85,9 @@ export function Login(): JSX.Element {
 
     const isActive = (): string => {
         if (userID && password) {
-            return "accountActive";
+            return "Active";
         } else {
-            return "accountInactive";
+            return "Inactive";
         }
     }
 
@@ -115,7 +115,7 @@ export function Login(): JSX.Element {
             <div className="container">
                 <BackHomeHeader />
                 <div className="contentBody accountBody">
-                    <h1>ログイン</h1>
+                    <h1 className='accounth1'>ログイン</h1>
                     <div className="accountForm">
                         <label>ユーザーID</label>
                         <input type="text" value={userID} onChange={(e) => setUserID(e.target.value)} />
@@ -124,7 +124,7 @@ export function Login(): JSX.Element {
                         <label>パスワード</label>
                         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                     </div>
-                    <button className={isActive()} onClick={() => loginClick()}>ログイン</button>
+                    <button className={`button ${isActive()}`} onClick={() => loginClick()}>ログイン</button>
                 </div>
             </div>
         </>
@@ -190,12 +190,12 @@ export function Account(): JSX.Element {
                         (isLoading) ?
                             <>Loading....</>
                             : <>
-                                <h1>アカウント情報</h1>
+                                <h1 className='accounth1'>アカウント情報</h1>
                                 <div className="accountForm">
                                     <label>ユーザーID</label>
                                     <div>{user.id}</div>
                                 </div>
-                                <button className="accountActive" onClick={() => logout()}>ログアウト</button>
+                                <button className="button" onClick={() => logout()}>ログアウト</button>
                             </>
                     }
                 </div>

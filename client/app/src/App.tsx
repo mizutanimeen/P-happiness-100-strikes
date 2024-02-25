@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { Routes, BrowserRouter, Route } from "react-router-dom";
 import { Register, Login } from './components/account/account';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
-import { CreateRecord } from './components/record/record';
+import { DetailRecord } from './components/record/record';
 import { Account } from './components/account/account';
 
 const queryClient = new QueryClient()
@@ -19,7 +19,7 @@ export default function App() {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Calendar />} />
-                <Route path="/records/create" element={<CreateRecord />} />
+                <Route path="/records/:id" element={<DetailRecord />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/account" element={<Account />} />

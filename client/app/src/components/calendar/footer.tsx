@@ -5,6 +5,9 @@ import { CiCirclePlus } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
 import axios from 'axios';
 import { IsLoginRequest } from '../axios/auth';
+import { TimeRecordCreateRequest, CreateTimeRecord } from '../axios/time';
+import { formatDate, formatTime } from '../util/util';
+import { useNavigate } from 'react-router-dom';
 
 // TODO: ログアウトしたときにフッターが変わらない
 export function CalendarFooter(): JSX.Element {
@@ -32,12 +35,34 @@ export function CalendarFooter(): JSX.Element {
         check();
     }, []);
 
+    const navigate = useNavigate();
+    const createTimeRecord = () => {
+        const now = new Date();
+        const date: string = formatDate(now) + " " + formatTime(now);
+        const data: CreateTimeRecord = {
+            date_time: date,
+            investment_money: 0,
+            recovery_money: 0
+        }
+
+        axios(TimeRecordCreateRequest(data)).then((result) => {
+            if (result.status === 201) {
+                const id: string = result.data.id;
+                navigate(`/records/${id}`);
+            } else {
+                console.log(result);
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+
     if (!isLoading && isLogined) {
         return <>
             <div className="footer login">
                 <Link to="/account" className="account"><button><MdAccountCircle /></button></Link>
                 <Link to="/" className="statistics"><button>統計</button></Link>
-                <Link to="/records/create" className="plus"> <button> <CiCirclePlus /></button></Link>
+                <div className="plus"> <button onClick={createTimeRecord}> <CiCirclePlus /></button></div>
             </div >
         </>
     } else {

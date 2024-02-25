@@ -1,0 +1,67 @@
+/* recordContainer */
+.recordContainer h1 {
+    padding: 0.5em 0 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.recordContainer h2 {
+    margin: 1.2em 0 0.3em;
+}
+
+.recordContainer label {
+    display: block;
+    font-size: 1.2em;
+}
+
+/* dateBox */
+.recordContainer .dateBox {
+    width: 100%;
+    margin: 0.5em 0;
+}
+
+.recordContainer .dateBox input {
+    width: 100%;
+    padding: 0.5em;
+    border: 1px solid #DCDCDC;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.recordContainer .dateBox input:focus {
+    outline: orange;
+    border: 1px solid orange;
+}
+
+/* incomeExpendContainer */
+.incomeExpendBox {
+    width: 100%;
+}
+
+.incomeExpendBox input {
+    width: 100%;
+    margin: 0.5em 0;
+    font-size: 1em;
+}
+
+.incomeExpendBox input.box {
+    padding: 0.5em;
+    border: 1px solid #DCDCDC;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.incomeExpendBox input.box:focus {
+    outline: orange;
+    border: 1px solid orange;
+}
+
+.incomeExpendBox input.bar {
+    margin: 0.3em 0 1.5em;
+}
+
+.recordButton {
+    padding: 0.5em 0 4em;
+}
+
+/* RPMRecord */
