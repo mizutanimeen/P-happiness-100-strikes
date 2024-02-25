@@ -195,7 +195,7 @@ export function Account(): JSX.Element {
                                     <label>ユーザーID</label>
                                     <div>{user.id}</div>
                                 </div>
-                                <button onClick={() => logout()}>ログアウト</button>
+                                <button className="accountActive" onClick={() => logout()}>ログアウト</button>
                             </>
                     }
                 </div>
