@@ -10,6 +10,7 @@ import axios from 'axios';
 import { DateRecordsGetRequest, DateRecords } from '../axios/date';
 import { TimeRecordsGetRequest, TimeRecordsGet, TimeRecordGet } from '../axios/time';
 import { set } from "../redux/slice/calendar";
+import { Modal } from './modal';
 
 export function getMonthDates(currentMonth: number): Date[][] {
     const month = new Date().getMonth() + currentMonth;
@@ -28,6 +29,7 @@ export function getMonthDates(currentMonth: number): Date[][] {
 }
 
 export function CalendarBody(): JSX.Element {
+    const [onModal, setOnModal] = useState<boolean>(false);
     return <>
         <table className="calendarBody">
             <thead>
@@ -41,12 +43,13 @@ export function CalendarBody(): JSX.Element {
                     <th>土</th>
                 </tr>
             </thead>
-            <TableBody />
+            <TableBody setOnModal={setOnModal} />
         </table>
+        <Modal onModal={onModal} setOnModal={setOnModal} />
     </ >
 }
 
-function TableBody(): JSX.Element {
+function TableBody(props: { setOnModal: (value: boolean) => void }): JSX.Element {
     /* TODO:Date情報をキャッシュする */
     const [currentMonthDates, setCurrentMonthDates] = useState<Date[][]>(getMonthDates(0));
     const currentMonthDiff = useSelector((state) => state.monthDiff.value);
@@ -98,7 +101,7 @@ function TableBody(): JSX.Element {
                     <tr key={i}>
                         {
                             row.map((date: Date, j: number) => (
-                                <CalendarDate key={j} date={date} timeRecord={timeRecords?.[formatDate(date)]} />
+                                <CalendarDate key={j} date={date} timeRecord={timeRecords?.[formatDate(date)]} setOnModal={props.setOnModal} />
                             ))
                         }
                     </tr>
@@ -108,15 +111,20 @@ function TableBody(): JSX.Element {
     </>
 }
 
-function CalendarDate(props: { date: Date, timeRecord: TimeRecordGet[] | undefined }): JSX.Element {
+function CalendarDate(props: { date: Date, timeRecord: TimeRecordGet[] | undefined, setOnModal: (value: boolean) => void }): JSX.Element {
     const dispatch = useDispatch();
-    const selectDate = (date: Date) => {
-        dispatch(select(formatDate(date)));
+    const selectedDate = useSelector((state) => state.selectDate.value);
+    // TODO: モーダルを表示する
+    const selectDate = (formatDate: string) => {
+        if (selectedDate === formatDate) {
+            props.setOnModal(true);
+        }
+        dispatch(select(formatDate));
     }
 
     const date = props.date;
     const fomatDate = formatDate(props.date);
-    return <td key={fomatDate} className={`date ${GetTodayClass(fomatDate)} ${GetSelectClass(fomatDate)}`} onClick={() => selectDate(date)}>
+    return <td key={fomatDate} className={`date ${getTodayClass(fomatDate)} ${getSelectClass(fomatDate, selectedDate)}`} onClick={() => selectDate(fomatDate)}>
         <div>
             <div className="dateDate">
                 {format(date, "dd")}
@@ -131,7 +139,7 @@ function CalendarDate(props: { date: Date, timeRecord: TimeRecordGet[] | undefin
     </td>
 }
 
-function GetTodayClass(fomatDate: string): string {
+function getTodayClass(fomatDate: string): string {
     const today = new Date();
     if (fomatDate === formatDate(today)) {
         return 'today';
@@ -139,8 +147,7 @@ function GetTodayClass(fomatDate: string): string {
     return '';
 }
 
-function GetSelectClass(fomatDate: string): string {
-    const selectedDate = useSelector((state) => state.selectDate.value);
+function getSelectClass(fomatDate: string, selectedDate: string): string {
     if (selectedDate === fomatDate) {
         return 'selected';
     }
