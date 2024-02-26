@@ -19,7 +19,7 @@ var (
 )
 
 func (s *Mysql) TimeRecordsGet(userID string, startDate time.Time, endDate time.Time) ([]*model.TimeRecord, error) {
-	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s >= ? AND %s <= ?", timeRecordTable, timeRecordUserID, timeRecordTime, timeRecordTime)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s >= ? AND %s <= ? ORDER BY %s ASC", timeRecordTable, timeRecordUserID, timeRecordTime, timeRecordTime, timeRecordTime)
 	rows, err := s.DB.Query(query, userID, startDate, endDate)
 	if err != nil {
 		return nil, fmt.Errorf("error query: %w", err)

@@ -3,11 +3,13 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db"
+	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db/model"
 )
 
 func TimeRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
@@ -26,9 +28,15 @@ func TimeRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		records := make(map[string][]model.TimeRecord)
+		for _, record := range timeRecords {
+			date := record.Time.Format("2006-01-02")
+			records[date] = append(records[date], *record)
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(timeRecords)
+		json.NewEncoder(w).Encode(records)
 	}
 }
 
@@ -71,7 +79,7 @@ func TimeRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
-		dateTime, err := time.Parse("2006-01-02 15:04:05", timeRecordReq.DateTime)
+		dateTime, err := time.Parse("2006-01-02T15:04:05", timeRecordReq.DateTime)
 		if err != nil {
 			http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 			return
@@ -108,7 +116,9 @@ func TimeRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
-		dateTime, err := time.Parse("2006-01-02 15:04:05", timeRecordReq.DateTime)
+		log.Println(timeRecordReq.DateTime)
+
+		dateTime, err := time.Parse("2006-01-02T15:04:05", timeRecordReq.DateTime)
 		if err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return

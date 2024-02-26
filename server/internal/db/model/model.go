@@ -12,12 +12,12 @@ type User struct {
 }
 
 type DateRecord struct {
-	ID        string
-	UserID    string
-	Date      time.Time
-	Happiness int
-	Create_at time.Time
-	Update_at time.Time
+	ID        string    `json:"id"`
+	UserID    string    `json:"user_id"`
+	Date      time.Time `json:"date"`
+	Happiness int       `json:"happiness"`
+	Create_at time.Time `json:"create_at"`
+	Update_at time.Time `json:"update_at"`
 }
 
 type TimeRecord struct {

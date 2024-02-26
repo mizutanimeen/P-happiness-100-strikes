@@ -26,5 +26,7 @@ func getStartEndDateQuery(r *http.Request) (time.Time, time.Time, int, error) {
 		return time.Time{}, time.Time{}, http.StatusBadRequest, fmt.Errorf("invalid end date")
 	}
 
+	endTime = endTime.AddDate(0, 0, 1).Add(-time.Nanosecond)
+
 	return startTime, endTime, 0, nil
 }

@@ -32,3 +32,18 @@ export const selectDateSlice = createSlice({
 });
 export const { select } = selectDateSlice.actions;
 export const selectDateReducer = selectDateSlice.reducer;
+
+export const loginSlice = createSlice({
+    name: 'login',
+    initialState: {
+        value: false,
+    },
+    reducers: {
+        set: (state, date) => {
+            state.value = date.payload;
+        },
+    },
+});
+
+export const { set } = loginSlice.actions;
+export const loginReducer = loginSlice.reducer;

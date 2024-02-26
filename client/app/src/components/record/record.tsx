@@ -82,7 +82,7 @@ export function DetailRecord() {
         if (timeRecords === undefined) {
             return;
         }
-        setDateTime(timeRecords.date_time.replace("T", " ").replace("Z", ""));
+        setDateTime(timeRecords.date_time.replace("Z", ""));
         setInvestmentMoney(timeRecords.investment_money);
         setRecoveryMoney(timeRecords.recovery_money);
     }, [timeRecords]);

@@ -18,7 +18,7 @@ var (
 )
 
 func (s *Mysql) DateRecordsGet(userID string, startDate time.Time, endDate time.Time) ([]*model.DateRecord, error) {
-	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s >= ? AND %s <= ?", dateRecordTable, dateRecordUserID, dateRecordDate, dateRecordDate)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s >= ? AND %s <= ? ORDER BY %s ASC", dateRecordTable, dateRecordUserID, dateRecordDate, dateRecordDate, dateRecordDate)
 	rows, err := s.DB.Query(query, userID, startDate, endDate)
 	if err != nil {
 		return nil, fmt.Errorf("error query: %w", err)

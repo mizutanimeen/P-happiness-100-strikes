@@ -41,6 +41,27 @@ export function TimeRecordGetRequest(id: string) {
     }
 };
 
+export type TimeRecordsGet = {
+    [date_time: string]: TimeRecordGet[]
+}
+
+export function TimeRecordsGetRequest(start: string, end: string) {
+    return {
+        method: 'GET',
+        url: `${baseURL}/api/v1/records/times`,
+        params: {
+            "start": start,
+            "end": end
+        },
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "*/*"
+        },
+        withCredentials: true
+    }
+};
+
+
 export type TimeRecordUpdate = {
     id: string;
     date_time: string;

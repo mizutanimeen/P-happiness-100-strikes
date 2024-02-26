@@ -4,44 +4,19 @@ import { Link } from 'react-router-dom';
 import { CiCirclePlus } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
 import axios from 'axios';
-import { IsLoginRequest } from '../axios/auth';
 import { TimeRecordCreateRequest, TimeRecordCreate } from '../axios/time';
 import { formatDate, formatTime } from '../util/util';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "../redux/store";
 
-// TODO: ログアウトしたときにフッターが変わらない
 export function CalendarFooter(): JSX.Element {
-    const [isLoading, setIsLoading] = useState(true);
-    const [isLogined, setIsLogined] = useState(false);
-
-    useEffect(() => {
-        setIsLoading(true);
-        const check = async () => {
-            await axios(IsLoginRequest).then((result) => {
-                if (result.status === 200) {
-                    setIsLogined(true);
-                } else {
-                    console.log(result);
-                }
-                setIsLoading(false);
-            }).catch((error) => {
-                if (error?.response?.status === 401) {
-                    setIsLogined(false);
-                } else {
-                    console.log(error);
-                }
-                setIsLoading(false);
-            });
-        };
-        check();
-    }, []);
+    const login = useSelector((state) => state.login.value);
 
     const navigate = useNavigate();
     const selectDate: string = useSelector((state) => state.selectDate.value);
     const createTimeRecord = () => {
         const now = new Date();
-        const date: string = selectDate + " " + formatTime(now);
+        const date: string = selectDate + "T" + formatTime(now);
         const data: TimeRecordCreate = {
             date_time: date,
             investment_money: 0,
@@ -60,7 +35,7 @@ export function CalendarFooter(): JSX.Element {
         });
     }
 
-    if (!isLoading && isLogined) {
+    if (login) {
         return <>
             <div className="footer login">
                 <Link to="/account" className="account"><button><MdAccountCircle /></button></Link>
