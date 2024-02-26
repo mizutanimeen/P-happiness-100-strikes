@@ -12,7 +12,7 @@ import "./css/record.css";
 import "../util/css/util.css";
 import { RPMRecordCreateRequest, RPMRecordCreate, RPMRecordGet, RPMRecordGetRequest, RPMRecordUpdate, RPMRecordUpdateRequest } from "../axios/rpm";
 import { MachineGet, MachineGetRequest } from "../axios/machine";
-import { set } from "date-fns";
+import { FullScreenDialog } from "./machine";
 
 export function DetailRecord() {
     const navigate = useNavigate();
@@ -26,12 +26,8 @@ export function DetailRecord() {
     const [isLoading, setIsLoading] = useState(false);
     const [timeRecords, setTimeRecords] = useState<TimeRecordGet>();
     const [rpmRecords, setRPMRecords] = useState<RPMRecordGet[]>();
-    const [rpmLoading, setRPMLoading] = useState(false);
 
-    const timeRecordGet = async () => {
-        if (isLoading) {
-            return;
-        }
+    const recordGet = async () => {
         if (id === undefined || id === "undefined" || id === "") {
             navigate("/")
             return;
@@ -44,6 +40,7 @@ export function DetailRecord() {
                 console.log(result);
             }
             setIsLoading(false);
+            rpmRecordGet();
         }).catch((error) => {
             if (error.response.status === 401) {
                 navigate("/");
@@ -55,27 +52,21 @@ export function DetailRecord() {
     };
 
     const rpmRecordGet = async () => {
-        if (rpmLoading) {
-            return;
-        }
         if (id === undefined || id === "undefined" || id === "") {
             navigate("/")
             return;
         }
-        setRPMLoading(true);
         await axios(RPMRecordGetRequest(id)).then((result) => {
             if (result.status === 200) {
                 setRPMRecords(result.data);
             } else {
                 console.log(result);
             }
-            setRPMLoading(false);
         }).catch((error) => {
             if (error.response.status === 401) {
                 navigate("/");
             }
             console.log(error);
-            setRPMLoading(false);
         });
     };
 
@@ -83,8 +74,7 @@ export function DetailRecord() {
         // strict modeのための対策
         if (!firstCallDone.current) {
             firstCallDone.current = true;
-            timeRecordGet();
-            rpmRecordGet();
+            recordGet();
         }
     }, [id]);
 
@@ -224,8 +214,8 @@ export function DetailRecord() {
     )
 }
 
-
 function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Element {
+    // TODO: まとめる。machineとか特にまとめられる
     const id = props.id;
     const rpmRecord = props.data;
     const [investmentMoney, setInvestmentMoney] = useState(0);
@@ -239,6 +229,7 @@ function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Element {
     const [machineName, setMachineName] = useState<string>("");
     const [machineRate, setMachineRate] = useState<number>(4);
     const [rpm, setRPM] = useState<number>(0);
+    const [isMachineDialogOpen, setIsMachineDialogOpen] = useState(false);
 
     const machineGet = async () => {
         if (isLoading) {
@@ -248,7 +239,7 @@ function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Element {
             return;
         }
         setIsLoading(true);
-        await axios(MachineGetRequest).then((result) => {
+        await axios(MachineGetRequest(rpmRecord.machine_id)).then((result) => {
             if (result.status === 200) {
                 setMachine(result.data);
             } else {
@@ -273,12 +264,13 @@ function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Element {
             setStartRPM(rpmRecord.start_rpm);
             setEndRPM(rpmRecord.end_rpm);
         }
-    }, [id]);
+    }, [rpmRecord]);
 
     useEffect(() => {
         if (machine === undefined) {
             return;
         }
+        setMachineID(machine.id);
         setMachineName(machine.machine_name);
         setMachineRate(machine.rate);
     }, [machine]);
@@ -406,14 +398,16 @@ function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Element {
                     <input className="bar" type="range" value={endRPM} step={1} min={0} max={2000} onChange={(e) => setEndRPM(Number(e.target.value))} />
                 </div>
                 <div>
-                    <button className="button">機種を設定</button>
-                    {machine?.id === undefined ?
+                    <button className="button" onClick={() => setIsMachineDialogOpen(true)}>機種を設定</button>
+                    <FullScreenDialog isMachineDialogOpen={isMachineDialogOpen} setIsMachineDialogOpen={setIsMachineDialogOpen} machineID={machineID}
+                        setMachineID={setMachineID} machineName={machineName} setMachineName={setMachineName} rate={machineRate} setRate={setMachineRate} />
+                    {machineID === undefined || machineID === 0 ?
                         <></>
                         :
-                        <>
-                            <p>機種: {machineName}</p>
-                            <p>レート: {machineRate}</p>
-                        </>
+                        <div>
+                            <div>機種: {machineName}</div>
+                            <div>レート: {machineRate}</div>
+                        </div>
                     }
                 </div>
                 <div className="rpmText">

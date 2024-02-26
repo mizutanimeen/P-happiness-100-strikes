@@ -2,8 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db"
 )
 
@@ -23,6 +25,33 @@ func MachinesGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func MachinesGetByID(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.Context().Value(CK_USERID).(string)
+
+		machineID := chi.URLParam(r, "machine_id")
+		if machineID == "" {
+			http.Error(w, "Invalid request", http.StatusBadRequest)
+			return
+		}
+
+		// ユーザーがIDを持っているか確認
+		machine, err := DB.MachineGetByID(machineID, id)
+		if err != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if machine == nil {
+			http.Error(w, "Machine not found", http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(machine)
+	}
+}
+
 type createMachineRequest struct {
 	Name string `json:"machine_name"`
 	Rate int    `json:"rate"`
@@ -39,13 +68,15 @@ func MachineCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
-		if err := DB.MachineCreate(id, machineReq.Name, machineReq.Rate); err != nil {
+		machineID, err := DB.MachineCreate(id, machineReq.Name, machineReq.Rate)
+		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{"message":"created"}`))
+		text := fmt.Sprintf(`{"machine_id":%d,"message":"created"}`, machineID)
+		w.Write([]byte(text))
 	}
 }
 

@@ -25,7 +25,7 @@ type DB interface {
 
 	MachinesGet(userID string) ([]*model.Machine, error)
 	MachineGetByID(id string, userID string) (*model.Machine, error)
-	MachineCreate(userID string, name string, rate int) error
+	MachineCreate(userID string, name string, rate int) (int64, error)
 	MachineUpdate(id string, name string, rate int) error
 	MachineDelete(id string) error
 

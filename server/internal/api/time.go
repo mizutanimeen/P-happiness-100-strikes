@@ -36,7 +36,7 @@ func TimeRecordsGetByID(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.Context().Value(CK_USERID).(string)
 
-		timeRecordID := chi.URLParam(r, "id")
+		timeRecordID := chi.URLParam(r, "times_id")
 
 		timeRecord, err := DB.TimeRecordGetByID(timeRecordID, id)
 		if err != nil {

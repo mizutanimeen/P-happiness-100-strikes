@@ -20,14 +20,14 @@ export function MachineCreateRequest(data: MachineCreate) {
     }
 };
 
-export type MachineGet = {
+export type MachinesGet = {
     id: string;
     user_id: string;
     machine_name: string;
     rate: number;
 }
 
-export const MachineGetRequest = {
+export const MachinesGetRequest = {
     method: 'GET',
     url: `${baseURL}/api/v1/machines`,
     headers: {
@@ -35,4 +35,38 @@ export const MachineGetRequest = {
         "Accept": "*/*"
     },
     withCredentials: true
+};
+
+export type MachineGet = {
+    id: number;
+    user_id: string;
+    machine_name: string;
+    rate: number;
+}
+
+export function MachineGetRequest(machineID: number) {
+    return {
+        method: 'GET',
+        url: `${baseURL}/api/v1/machines/${machineID}`,
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "*/*"
+        },
+        withCredentials: true
+    }
+};
+
+export function MachineDeleteRequest(machineID: number) {
+    return {
+        method: 'DELETE',
+        url: `${baseURL}/api/v1/machines`,
+        params: {
+            "machine_id": machineID
+        },
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "*/*"
+        },
+        withCredentials: true
+    }
 };

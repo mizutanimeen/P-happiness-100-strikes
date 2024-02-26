@@ -1,0 +1,65 @@
+.machineListItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.machineListItem button {
+    padding: 0.5em;
+    border: none;
+    border-radius: 5px;
+    background-color: red;
+    color: white;
+    cursor: pointer;
+    margin: 0 0.5em 0 0;
+}
+
+.machineForm {
+    padding: 1em;
+    margin: 0.5em 0;
+}
+
+.machineForm>div {
+    width: 100%;
+}
+
+.machineForm input {
+    margin: 0.5em 0;
+    padding: 0.5em;
+    border: 1px solid #DCDCDC;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.machineForm input:focus {
+    outline: orange;
+    border: 1px solid orange;
+}
+
+.machineFormName label {
+    display: block;
+    width: 100%;
+}
+
+.machineFormName input {
+    display: block;
+    width: 100%;
+    margin: 0 0 1.5em;
+}
+
+.machineFormRate {
+    margin: 0 0 1.5em;
+}
+
+.machineFormRate>label {
+    display: block;
+    width: 100%;
+}
+
+.machineFormRate>div {
+    display: flex;
+}
+
+.machineFormRate>div>div {
+    width: 100%;
+}

@@ -49,17 +49,24 @@ func (s *Mysql) MachineGetByID(id string, userID string) (*model.Machine, error)
 	return &machine, nil
 }
 
-func (s *Mysql) MachineCreate(userID string, name string, rate int) error {
+func (s *Mysql) MachineCreate(userID string, name string, rate int) (int64, error) {
 	query := fmt.Sprintf("INSERT INTO %s(%s, %s, %s) VALUES(?,?,?)", machineTable, machineUserID, machineName, machineRate)
 	insert, err := s.DB.Prepare(query)
 	if err != nil {
-		return fmt.Errorf("error prepare: %w", err)
+		return -1, fmt.Errorf("error prepare: %w", err)
 	}
 
-	if _, err := insert.Exec(userID, name, rate); err != nil {
-		return fmt.Errorf("error exec: %w", err)
+	r, err := insert.Exec(userID, name, rate)
+	if err != nil {
+		return -1, fmt.Errorf("error exec: %w", err)
 	}
-	return nil
+
+	id, err := r.LastInsertId()
+	if err != nil {
+		return -1, fmt.Errorf("error last insert id: %w", err)
+	}
+
+	return id, nil
 }
 
 func (s *Mysql) MachineUpdate(id string, name string, rate int) error {

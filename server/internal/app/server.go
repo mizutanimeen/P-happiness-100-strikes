@@ -67,7 +67,7 @@ func (a *App) dateRecordsHandler() http.Handler {
 func (a *App) timeRecordsHandler() http.Handler {
 	router := chi.NewRouter()
 	router.Get("/", api.TimeRecordsGet(a.DB))
-	router.Get("/{id}", api.TimeRecordsGetByID(a.DB))
+	router.Get("/{times_id}", api.TimeRecordsGetByID(a.DB))
 	router.Post("/", api.TimeRecordCreate(a.DB))
 	router.Put("/", api.TimeRecordUpdate(a.DB))
 	router.Delete("/", api.TimeRecordDelete(a.DB))
@@ -87,6 +87,7 @@ func (a *App) rPMRecordsHandler() http.Handler {
 func (a *App) machinesHandler() http.Handler {
 	router := chi.NewRouter()
 	router.Get("/", api.MachinesGet(a.DB))
+	router.Get("/{machine_id}", api.MachinesGetByID(a.DB))
 	router.Post("/", api.MachineCreate(a.DB))
 	router.Put("/", api.MachineUpdate(a.DB))
 	router.Delete("/", api.MachineDelete(a.DB))
