@@ -62,18 +62,22 @@ function TableBody(): JSX.Element {
             } else {
                 console.log(result);
             }
+            firstCallDone.current = false;
         }).catch((error) => {
             if (error.response.status === 401) {
                 dispatch(set(false));
             } else {
                 console.log(error);
             }
+            firstCallDone.current = false;
         });
     };
 
     useEffect(() => {
         setCurrentMonthDates(getMonthDates(currentMonthDiff))
+    }, [currentMonthDiff]);
 
+    useEffect(() => {
         const start = formatDate(currentMonthDates[0][0]);
         const end = formatDate(currentMonthDates[4][6]);
 
@@ -85,7 +89,7 @@ function TableBody(): JSX.Element {
         }
 
         // Reduxにマップ形式でcacheする 
-    }, [currentMonthDiff]);
+    }, [currentMonthDates]);
 
     return <>
         <tbody>
