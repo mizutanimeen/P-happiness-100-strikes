@@ -14,6 +14,22 @@
     font-size: 1.2em;
 }
 
+.recordContainer input.box {
+    padding: 0.5em;
+    border: 1px solid #DCDCDC;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.recordContainer input.box:focus {
+    outline: orange;
+    border: 1px solid orange;
+}
+
+.recordContainer input.bar {
+    width: 100%;
+}
+
 /* dateBox */
 .recordContainer .dateBox {
     width: 100%;
@@ -28,10 +44,6 @@
     box-sizing: border-box;
 }
 
-.recordContainer .dateBox input:focus {
-    outline: orange;
-    border: 1px solid orange;
-}
 
 /* incomeExpendContainer */
 .incomeExpendBox {
@@ -44,18 +56,6 @@
     font-size: 1em;
 }
 
-.incomeExpendBox input.box {
-    padding: 0.5em;
-    border: 1px solid #DCDCDC;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.incomeExpendBox input.box:focus {
-    outline: orange;
-    border: 1px solid orange;
-}
-
 .incomeExpendBox input.bar {
     margin: 0.3em 0 1.5em;
 }
@@ -65,3 +65,29 @@
 }
 
 /* RPMRecord */
+
+/* rpmRecordContainer */
+.rpmRecordContainer input.box {
+    width: 100%;
+    padding: 0.8em;
+    font-size: 1em;
+}
+
+.rpmRecordContainer input.bar {
+    margin: 0.5em 0 1.5em;
+}
+
+.investmentButtonBox {
+    display: flex;
+    width: 100%;
+    margin: 0.5em 0;
+}
+
+.investmentButtonBox button {
+    width: 50%;
+}
+
+.rpmText {
+    font-size: 1.2em;
+    margin: 0.8em 0;
+}

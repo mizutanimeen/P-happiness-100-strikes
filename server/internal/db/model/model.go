@@ -31,12 +31,12 @@ type TimeRecord struct {
 }
 
 type Machine struct {
-	ID        string
-	UserID    string
-	Name      string
-	Rate      int
-	Create_at time.Time
-	Update_at time.Time
+	ID        string    `json:"id"`
+	UserID    string    `json:"user_id"`
+	Name      string    `json:"machine_name"`
+	Rate      int       `json:"rate"`
+	Create_at time.Time `json:"create_at"`
+	Update_at time.Time `json:"update_at"`
 }
 
 type RPMRecord struct {

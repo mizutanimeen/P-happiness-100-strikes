@@ -10,7 +10,9 @@ import axios from "axios";
 import { TimeRecordGetRequest, TimeRecordGet, TimeRecordUpdateRequest, TimeRecordUpdate } from "../axios/time";
 import "./css/record.css";
 import "../util/css/util.css";
-import { RPMRecordCreateRequest, RPMRecordCreate, RPMRecordGet, RPMRecordGetRequest } from "../axios/rpm";
+import { RPMRecordCreateRequest, RPMRecordCreate, RPMRecordGet, RPMRecordGetRequest, RPMRecordUpdate, RPMRecordUpdateRequest } from "../axios/rpm";
+import { MachineGet, MachineGetRequest } from "../axios/machine";
+import { set } from "date-fns";
 
 export function DetailRecord() {
     const navigate = useNavigate();
@@ -194,7 +196,7 @@ export function DetailRecord() {
                             <div>
                                 {
                                     rpmRecords?.map((data: RPMRecordGet, i: number) => (
-                                        <RPMRecord key={i} id={i + 1} />
+                                        <RPMRecord key={i} data={data} id={i + 1} />
                                     ))
                                 }
                             </div>
@@ -204,12 +206,12 @@ export function DetailRecord() {
                             <h2>収支記録</h2>
                             <div className="incomeExpendBox">
                                 <label>投資額</label>
-                                <input className="box" type="text" value={investmentMoney} onChange={(e) => setInputInvestmentMoney(e.target.value)} />
+                                <input className="box" type="text" pattern="[0-9]*" value={investmentMoney} onChange={(e) => setInputInvestmentMoney(e.target.value)} />
                                 <input className="bar" type="range" value={investmentMoney} step={step} min={0} max={200000} onChange={(e) => setInvestmentMoney(Number(e.target.value))} />
                             </div>
                             <div className="incomeExpendBox">
                                 <label>回収額</label>
-                                <input className="box" type="text" value={recoveryMoney} onChange={(e) => setInputRecoveryMoney(e.target.value)} />
+                                <input className="box" type="text" pattern="[0-9]*" value={recoveryMoney} onChange={(e) => setInputRecoveryMoney(e.target.value)} />
                                 <input className="bar" type="range" value={recoveryMoney} step={step} min={0} max={200000} onChange={(e) => setRecoveryMoney(Number(e.target.value))} />
                             </div>
                         </div>
@@ -223,9 +225,151 @@ export function DetailRecord() {
 }
 
 
-function RPMRecord(props: { id: number }): JSX.Element {
+function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Element {
     const id = props.id;
-    const [recoveryMoney, setRecoveryMoney] = useState(0);
+    const rpmRecord = props.data;
+    const [investmentMoney, setInvestmentMoney] = useState(0);
+    const [investmentBall, setInvestmentBall] = useState(0);
+    const [startRPM, setStartRPM] = useState(0);
+    const [endRPM, setEndRPM] = useState(0);
+    const firstCallDone = useRef(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [machine, setMachine] = useState<MachineGet>();
+    const [machineID, setMachineID] = useState<number>(0);
+    const [machineName, setMachineName] = useState<string>("");
+    const [machineRate, setMachineRate] = useState<number>(4);
+    const [rpm, setRPM] = useState<number>(0);
+
+    const machineGet = async () => {
+        if (isLoading) {
+            return;
+        }
+        if (rpmRecord.machine_id === undefined || rpmRecord.machine_id === 0) {
+            return;
+        }
+        setIsLoading(true);
+        await axios(MachineGetRequest).then((result) => {
+            if (result.status === 200) {
+                setMachine(result.data);
+            } else {
+                console.log(result);
+            }
+            setIsLoading(false);
+        }).catch((error) => {
+            if (error.response.status === 401) {
+            }
+            console.log(error);
+            setIsLoading(false);
+        });
+    };
+
+    useEffect(() => {
+        // strict modeのための対策
+        if (!firstCallDone.current) {
+            firstCallDone.current = true;
+            machineGet();
+            setInvestmentMoney(rpmRecord.investment_money);
+            setInvestmentBall(rpmRecord.investment_ball);
+            setStartRPM(rpmRecord.start_rpm);
+            setEndRPM(rpmRecord.end_rpm);
+        }
+    }, [id]);
+
+    useEffect(() => {
+        if (machine === undefined) {
+            return;
+        }
+        setMachineName(machine.machine_name);
+        setMachineRate(machine.rate);
+    }, [machine]);
+
+    const setInputInvestmentMoney = (value: string) => {
+        let n = Number(value);
+        if (isNaN(n)) {
+            return;
+        }
+        if (n < 0) {
+            n = 0;
+        }
+        setInvestmentMoney(n);
+    }
+
+    const setInputInvestmentBall = (value: string) => {
+        let n = Number(value);
+        if (isNaN(n)) {
+            return;
+        }
+        if (n < 0) {
+            n = 0;
+        }
+        setInvestmentBall(n);
+    }
+
+    const setInputStartRPM = (value: string) => {
+        let n = Number(value);
+        if (isNaN(n)) {
+            return;
+        }
+        if (n < 0) {
+            n = 0;
+        }
+        setStartRPM(n);
+    }
+    const setInputEndRPM = (value: string) => {
+        let n = Number(value);
+        if (isNaN(n)) {
+            return;
+        }
+        if (n < 0) {
+            n = 0;
+        }
+        setEndRPM(n);
+    }
+
+    useEffect(() => {
+        if (investmentMoney === 0 && investmentBall === 0) {
+            setRPM(0);
+            return;
+        }
+        if (startRPM === 0 && endRPM === 0 || startRPM > endRPM) {
+            setRPM(0);
+            return;
+        }
+        const cost = investmentBall * machineRate + investmentMoney;
+        setRPM((endRPM - startRPM) / cost * 1000);
+    }, [investmentMoney, investmentBall, startRPM, endRPM]);
+
+    const updateRPMRecord = () => {
+        if (investmentMoney < 0 || investmentBall < 0 || startRPM < 0 || endRPM < 0) {
+            alert("投資額、投資玉、開始回転数、終了回転数は0以上で入力してください");
+            return;
+        }
+
+        if (rpmRecord.time_record_id === undefined || rpmRecord.time_record_id === "0" || rpmRecord.time_record_id === "undefined") {
+            alert("エラー");
+            return;
+        }
+
+        const data: RPMRecordUpdate = {
+            rpm_record_id: rpmRecord.id,
+            investment_money: investmentMoney,
+            investment_ball: investmentBall,
+            start_rpm: startRPM,
+            end_rpm: endRPM,
+            machine_id: machineID === undefined ? 0 : machineID
+        }
+
+        axios(RPMRecordUpdateRequest(rpmRecord.time_record_id, data)).then((result) => {
+            if (result.status === 200) {
+                alert("更新しました");
+            } else {
+                console.log(result);
+            }
+        }).catch((error) => {
+            console.log(error);
+        }
+        );
+    }
 
     return <>
         <Accordion>
@@ -236,9 +380,92 @@ function RPMRecord(props: { id: number }): JSX.Element {
             >
                 記録{id}
             </AccordionSummary>
-            <AccordionDetails>
-                <input className="box" type="number" value={recoveryMoney} onChange={(e) => setRecoveryMoney(Number(e.target.value))} />
+            <AccordionDetails className="rpmRecordContainer">
+                <div>
+                    <label>投資額</label>
+                    <input className="box" type="text" pattern="[0-9]*" value={investmentMoney} onChange={(e) => setInputInvestmentMoney(e.target.value)} />
+                    <div className="investmentButtonBox">
+                        <InvestmentMoneyButton rate={machineRate} investmentMoney={investmentMoney} setInvestmentMoney={setInvestmentMoney} />
+                    </div>
+                </div>
+                <div>
+                    <label>投資玉</label>
+                    <input className="box" type="text" pattern="[0-9]*" value={investmentBall} onChange={(e) => setInputInvestmentBall(e.target.value)} />
+                    <div className="investmentButtonBox">
+                        <InvestmentBallButton rate={machineRate} investmentBall={investmentBall} setInvestmentBall={setInvestmentBall} />
+                    </div>
+                </div>
+                <div>
+                    <label>開始回転数</label>
+                    <input className="box" type="text" pattern="[0-9]*" value={startRPM} onChange={(e) => setInputStartRPM(e.target.value)} />
+                    <input className="bar" type="range" value={startRPM} step={1} min={0} max={2000} onChange={(e) => setStartRPM(Number(e.target.value))} />
+                </div>
+                <div>
+                    <label>終了回転数</label>
+                    <input className="box" type="text" pattern="[0-9]*" value={endRPM} onChange={(e) => setInputEndRPM(e.target.value)} />
+                    <input className="bar" type="range" value={endRPM} step={1} min={0} max={2000} onChange={(e) => setEndRPM(Number(e.target.value))} />
+                </div>
+                <div>
+                    <button className="button">機種を設定</button>
+                    {machine?.id === undefined ?
+                        <></>
+                        :
+                        <>
+                            <p>機種: {machineName}</p>
+                            <p>レート: {machineRate}</p>
+                        </>
+                    }
+                </div>
+                <div className="rpmText">
+                    {rpm.toPrecision(4)} (回転/1000円)
+                </div>
+                <div>
+                    <button className="button" onClick={updateRPMRecord}>更新</button>
+                </div>
             </AccordionDetails>
         </Accordion>
     </>
 }
+
+function InvestmentMoneyButton(props: { rate: number, investmentMoney: number, setInvestmentMoney: (value: number) => void }): JSX.Element {
+    const rate = props.rate;
+    const investmentMoney = props.investmentMoney;
+    const setInvestmentMoney = props.setInvestmentMoney;
+
+    const getRateMoney = (rate: number): number => {
+        if (rate === 4) {
+            return 500;
+        }
+        return 200;
+    }
+    const rateMoney: number = getRateMoney(rate);
+
+    return (
+        <>
+            <button className="button" onClick={() => setInvestmentMoney(investmentMoney - rateMoney < 0 ? 0 : investmentMoney - rateMoney)}>-{rateMoney}</button>
+            <button className="button" onClick={() => setInvestmentMoney(investmentMoney + rateMoney)}>+{rateMoney}</button>
+        </>
+    )
+}
+
+function InvestmentBallButton(props: { rate: number, investmentBall: number, setInvestmentBall: (value: number) => void }): JSX.Element {
+    const rate = props.rate;
+    const investmentBall = props.investmentBall;
+    const setInvestmentBall = props.setInvestmentBall;
+
+    const getRateBall = (rate: number): number => {
+        if (rate === 4) {
+            return 125;
+        }
+        return 200;
+    }
+    const rateBall: number = getRateBall(rate);
+
+    return (
+        <>
+            <button className="button" onClick={() => setInvestmentBall(investmentBall - rateBall < 0 ? 0 : investmentBall - rateBall)}>-{rateBall}</button>
+            <button className="button" onClick={() => setInvestmentBall(investmentBall + rateBall)}>+{rateBall}</button>
+        </>
+    )
+}
+

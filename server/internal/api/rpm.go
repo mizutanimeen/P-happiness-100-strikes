@@ -82,18 +82,7 @@ func RPMRecordUpdate(db db.DB) http.HandlerFunc {
 		}
 		defer r.Body.Close()
 
-		// ユーザーがIDを持っているか確認
-		rpmRecord, err := db.RPMRecordGetByID(rpmRecordReq.ID, userID, timeRecordID)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("RPMRecordGetByID: %v", err), http.StatusInternalServerError)
-			return
-		}
-		if rpmRecord == nil {
-			http.Error(w, "RPMRecord not found", http.StatusBadRequest)
-			return
-		}
-
-		if err := db.RPMRecordUpdate(rpmRecordReq.ID, rpmRecordReq.InvestmentMoney, rpmRecordReq.InvestmentBall, rpmRecordReq.StartRPM, rpmRecordReq.EndRPM, rpmRecordReq.MachineID); err != nil {
+		if err := db.RPMRecordUpdate(rpmRecordReq.ID, timeRecordID, userID, rpmRecordReq.InvestmentMoney, rpmRecordReq.InvestmentBall, rpmRecordReq.StartRPM, rpmRecordReq.EndRPM, rpmRecordReq.MachineID); err != nil {
 			http.Error(w, fmt.Sprintf("RPMRecordUpdate: %v", err), http.StatusInternalServerError)
 			return
 		}
@@ -110,18 +99,7 @@ func RPMRecordDelete(db db.DB) http.HandlerFunc {
 		timeRecordID := chi.URLParam(r, "times_id")
 		id := chi.URLParam(r, "rpm_record_id")
 
-		// ユーザーがIDを持っているか確認
-		rpmRecord, err := db.RPMRecordGetByID(id, userID, timeRecordID)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("RPMRecordGetByID: %v", err), http.StatusInternalServerError)
-			return
-		}
-		if rpmRecord == nil {
-			http.Error(w, "RPMRecord not found", http.StatusBadRequest)
-			return
-		}
-
-		if err := db.RPMRecordDelete(id); err != nil {
+		if err := db.RPMRecordDelete(id, timeRecordID, userID); err != nil {
 			http.Error(w, fmt.Sprintf("RPMRecordDelete: %v", err), http.StatusInternalServerError)
 			return
 		}

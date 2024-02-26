@@ -37,6 +37,7 @@ export function RPMRecordCreateRequest(id: string, data: RPMRecordCreate) {
 
 export type RPMRecordGet = {
     id: string;
+    time_record_id: string;
     investment_money: number;
     investment_ball: number;
     start_rpm: number;
@@ -52,6 +53,31 @@ export function RPMRecordGetRequest(id: string) {
             "Content-Type": "application/json",
             "Accept": "*/*"
         },
+        withCredentials: true
+    }
+};
+
+
+export type RPMRecordUpdate = {
+    rpm_record_id: string;
+    investment_money: number;
+    investment_ball: number;
+    start_rpm: number;
+    end_rpm: number;
+    machine_id: number;
+}
+
+export function RPMRecordUpdateRequest(timeRecordID: string, data: RPMRecordUpdate) {
+    const jsonData = JSON.stringify(data);
+
+    return {
+        method: 'PUT',
+        url: `${baseURL}/api/v1/records/times/${timeRecordID}/rpms`,
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "*/*"
+        },
+        data: jsonData,
         withCredentials: true
     }
 };
