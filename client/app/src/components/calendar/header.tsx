@@ -25,6 +25,7 @@ function yearMonthToString(currentMonthDiff: number): string {
     const currentYear = new Date().getFullYear();
     const month = new Date().getMonth() + currentMonthDiff;
     const date = new Date(currentYear, month, 1)
+
     const ansMonth = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1; // 1月 = 0
     const ansYear = date.getFullYear();
     return ansYear + "年" + ansMonth + "月"

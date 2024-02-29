@@ -1,16 +1,5 @@
 import { baseURL } from './axios';
 
-/*
-
-type createRPMRecordRequest struct {
-    InvestmentMoney int    `json:"investment_money"`
-    InvestmentBall  int    `json:"investment_ball"`
-    StartRPM        int    `json:"start_rpm"`
-    EndRPM          int    `json:"end_rpm"`
-    MachineID       string `json:"machine_id"`
-}
-*/
-
 export type RPMRecordCreate = {
     investment_money: number;
     investment_ball: number;
@@ -34,7 +23,6 @@ export function RPMRecordCreateRequest(id: string, data: RPMRecordCreate) {
     }
 };
 
-
 export type RPMRecordGet = {
     id: string;
     time_record_id: string;
@@ -56,7 +44,6 @@ export function RPMRecordGetRequest(id: string) {
         withCredentials: true
     }
 };
-
 
 export type RPMRecordUpdate = {
     rpm_record_id: string;

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
 import './css/footer.css';
 import { Link } from 'react-router-dom';
 import { CiCirclePlus } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
 import axios from 'axios';
 import { TimeRecordCreateRequest, TimeRecordCreate } from '../axios/time';
-import { formatDate, formatTime } from '../util/util';
+import { formatTime } from '../util/util';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "../redux/store";
 
@@ -27,8 +26,6 @@ export function CalendarFooter(): JSX.Element {
             if (result.status === 201) {
                 const id: string = result.data.id;
                 navigate(`/records/${id}`);
-            } else {
-                console.log(result);
             }
         }).catch((error) => {
             console.log(error);

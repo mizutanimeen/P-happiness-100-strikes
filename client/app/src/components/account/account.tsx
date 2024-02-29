@@ -40,9 +40,7 @@ export function Register(): JSX.Element {
             .then(function (response) {
                 if (response.status === 201) {
                     navigate("/")
-                    return;
                 }
-                // TODO: ステータスコードが他にあるか
             })
             .catch(function (error) {
                 console.log(error)
@@ -100,9 +98,7 @@ export function Login(): JSX.Element {
             .then(function (response) {
                 if (response.status === 200) {
                     navigate("/")
-                    return;
                 }
-                // TODO: ステータスコードが他にあるか
             })
             .catch(function (error) {
                 // TODO: エラーによってメッセージを変える
@@ -139,23 +135,18 @@ export function Account(): JSX.Element {
 
     useEffect(() => {
         const userGet = async () => {
-            if (isLoading) {
-                return;
-            }
             setIsLoading(true);
             await axios(UserGetRequest).then((result) => {
                 if (result.status === 200) {
                     setUser(result.data);
-                } else {
-                    console.log(result);
                 }
                 setIsLoading(false);
             }).catch((error) => {
                 if (error.response.status === 401) {
                     navigate("/login");
-                    return;
+                } else {
+                    console.log(error);
                 }
-                console.log(error);
                 setIsLoading(false);
             });
         };
@@ -172,9 +163,7 @@ export function Account(): JSX.Element {
             .then(function (response) {
                 if (response.status === 200) {
                     navigate("/")
-                    return;
                 }
-                console.log(response);
             })
             .catch(function (error) {
                 alert("ログアウトに失敗しました。")

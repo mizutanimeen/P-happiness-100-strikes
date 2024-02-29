@@ -8,6 +8,12 @@ import { MachinesGetRequest, MachinesGet } from '../axios/machine';
 import './css/machine.css';
 import { MachineCreateRequest, MachineCreate, MachineDeleteRequest } from '../axios/machine';
 
+export type Machine = {
+    id: number,
+    name: string,
+    rate: number
+}
+
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
         children: React.ReactElement;
@@ -18,27 +24,22 @@ const Transition = React.forwardRef(function Transition(
 });
 
 export function FullScreenDialog(props: {
-    isMachineDialogOpen: boolean, machineID: number, machineName: string, rate: number,
+    isMachineDialogOpen: boolean,
     setIsMachineDialogOpen: (value: boolean) => void,
-    setMachineID: (value: number) => void,
-    setMachineName: (value: string) => void,
-    setRate: (value: number) => void
+    setMachine: (value: Machine) => void,
 }) {
     const { isMachineDialogOpen, setIsMachineDialogOpen } = props;
-    const { machineID, setMachineID } = props;
-    const { machineName, setMachineName } = props;
-    const { rate, setRate } = props;
+    const { setMachine } = props;
+    const firstCallDone = useRef(false);
     const [isLoading, setIsLoading] = useState(false);
     const [machines, setMachines] = useState<MachinesGet[]>([]);
-    const firstCallDone = useRef(false);
-    const [createMachineName, setCreateMachineName] = useState<string>("");
-    const [createRate, setCreateRate] = useState<number>(0);
+    const [createMachine, setCreateMachine] = useState<MachineCreate>({
+        machine_name: "",
+        rate: 0
+    });
 
     // machine一覧取得
-    const machineGet = async () => {
-        if (isLoading) {
-            return;
-        }
+    const machinesGet = async () => {
         setIsLoading(true);
         await axios(MachinesGetRequest).then((result) => {
             if (result.status === 200) {
@@ -65,30 +66,30 @@ export function FullScreenDialog(props: {
         // strict modeのための対策
         if (!firstCallDone.current) {
             firstCallDone.current = true;
-            machineGet();
+            machinesGet();
         }
     }, [isMachineDialogOpen]);
 
     // machine 作成
     const machineCreate = () => {
-        if (createMachineName === "" || createRate === 0) {
+        if (!createMachine.machine_name || !createMachine.rate) {
             return;
         }
-        const data: MachineCreate = {
-            machine_name: createMachineName,
-            rate: createRate
-        }
 
-        axios(MachineCreateRequest(data)).then((result) => {
+        axios(MachineCreateRequest(createMachine)).then((result) => {
             if (result.status === 201) {
-                setMachineID(result.data.machine_id);
-                setMachineName(createMachineName);
-                setRate(createRate);
-                setCreateMachineName("");
-                setCreateRate(0);
+                setMachine(
+                    {
+                        id: result.data.machine_id,
+                        name: createMachine.machine_name,
+                        rate: createMachine.rate
+                    }
+                )
+                setCreateMachine({
+                    machine_name: "",
+                    rate: 0
+                });
                 setIsMachineDialogOpen(false);
-            } else {
-                console.log(result);
             }
         }).catch((error) => {
             if (error.response.status === 401) {
@@ -96,27 +97,26 @@ export function FullScreenDialog(props: {
             console.log(error);
         });
     }
-    //TODO:
-    // machine 選択
-    // machine 削除
 
     const handleClose = () => {
         setIsMachineDialogOpen(false);
     };
 
-    const setMachine = (id: string, name: string, rate: number) => {
-        setMachineID(Number(id));
-        setMachineName(name);
-        setRate(rate);
+    const selectMachine = (id: string, name: string, rate: number) => {
+        setMachine(
+            {
+                id: Number(id),
+                name: name,
+                rate: rate
+            }
+        );
         setIsMachineDialogOpen(false);
     }
 
     const deleteMachine = (id: string) => {
         axios(MachineDeleteRequest(Number(id))).then((result) => {
             if (result.status === 204) {
-                machineGet();
-            } else {
-                console.log(result);
+                machinesGet();
             }
         }).catch((error) => {
             if (error.response.status === 401) {
@@ -126,6 +126,7 @@ export function FullScreenDialog(props: {
     }
 
     //TODO: key warning どこだ
+    //TODO: form を下固定、listをスクロール
     return (
         <>
             <Dialog
@@ -151,36 +152,50 @@ export function FullScreenDialog(props: {
                 </AppBar>
                 <List>
                     {
-                        machines.map((machine: MachinesGet, i: number) => {
-                            return (
-                                <>
-                                    <div className='machineListItem'>
-                                        <ListItemButton key={i}>
-                                            <ListItemText primary={machine.machine_name} secondary={machine.rate} onClick={(e) => setMachine(machine.id, machine.machine_name, machine.rate)} />
-                                        </ListItemButton>
-                                        <button onClick={(e) => deleteMachine(machine.id)}>削除</button>
-                                    </div>
-                                    <Divider />
-                                </>
-                            );
-                        })
+                        (isLoading) ?
+                            <>
+                                Loading....
+                            </>
+                            :
+                            machines.map((machine: MachinesGet, i: number) => {
+                                return (
+                                    <>
+                                        <div className='machineListItem'>
+                                            <ListItemButton key={i}>
+                                                <ListItemText primary={machine.machine_name} secondary={machine.rate} onClick={() => selectMachine(machine.id, machine.machine_name, machine.rate)} />
+                                            </ListItemButton>
+                                            <button onClick={(e) => deleteMachine(machine.id)}>削除</button>
+                                        </div>
+                                        <Divider />
+                                    </>
+                                );
+                            })
                     }
                 </List>
                 <div className='machineForm'>
                     <h2>新規作成</h2>
                     <div className='machineFormName'>
                         <label>機種名</label>
-                        <input type="text" value={createMachineName} onChange={(e) => setCreateMachineName(e.target.value)} />
+                        <input type="text" value={createMachine.machine_name} onChange={(e) => setCreateMachine({
+                            machine_name: e.target.value,
+                            rate: createMachine.rate
+                        })} />
                     </div>
                     <div className='machineFormRate'>
                         <label>レート</label>
                         <div>
                             <div>
-                                <input type="radio" id="four" name="rate" value={4} onChange={(e) => setCreateRate(Number(e.target.value))} />
+                                <input type="radio" id="four" name="rate" value={4} onChange={(e) => setCreateMachine({
+                                    machine_name: createMachine.machine_name,
+                                    rate: Number(e.target.value)
+                                })} />
                                 <label htmlFor="four">4円(500円 = 125玉)</label>
                             </div>
                             <div>
-                                <input type="radio" id="one" name="rate" value={1} onChange={(e) => setCreateRate(Number(e.target.value))} />
+                                <input type="radio" id="one" name="rate" value={1} onChange={(e) => setCreateMachine({
+                                    machine_name: createMachine.machine_name,
+                                    rate: Number(e.target.value)
+                                })} />
                                 <label htmlFor="one">1円(200円 = 200玉)</label>
                             </div>
                         </div>
