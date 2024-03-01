@@ -10,9 +10,12 @@ import "./css/record.css";
 import "../util/css/util.css";
 import { RPMRecordCreateRequest, RPMRecordCreate, RPMRecordGet, RPMRecordGetRequest } from "../axios/rpm";
 import { RPMRecord } from "./rpm";
-
+import { useDispatch } from "react-redux";
+import { setTRCache, resetTR } from "../redux/slice/calendar";
 
 export function DetailRecord() {
+    const dispatch = useDispatch();
+    const currentMonthDiff = useSelector((state) => state.monthDiff.value);
     const navigate = useNavigate();
     const selectDate = useSelector((state) => state.selectDate.value);
     const [dateTime, setDateTime] = useState(selectDate + " " + formatTime(new Date()));
@@ -73,6 +76,7 @@ export function DetailRecord() {
         if (!firstCallDone.current) {
             firstCallDone.current = true;
             recordGet();
+            dispatch(setTRCache({ monthDiff: currentMonthDiff.toString(), data: false }));
         }
     }, [id]);
 

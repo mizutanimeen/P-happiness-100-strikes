@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { monthDiffReducer, selectDateReducer, loginReducer, totalMoneyReducer } from './slice/calendar';
+import { monthDiffReducer, selectDateReducer, loginReducer, totalMoneyReducer, timeRecordsReducer } from './slice/calendar';
 import { useSelector as rawUseSelector, TypedUseSelectorHook } from 'react-redux';
 
 export const store = configureStore({
@@ -8,6 +8,7 @@ export const store = configureStore({
         selectDate: selectDateReducer,
         login: loginReducer,
         totalMoney: totalMoneyReducer,
+        timeRecords: timeRecordsReducer,
     },
 });
 
