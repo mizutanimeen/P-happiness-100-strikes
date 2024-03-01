@@ -9,7 +9,7 @@ import { formatDate } from '../util/util';
 import axios from 'axios';
 import { DateRecordsGetRequest, DateRecords } from '../axios/date';
 import { TimeRecordsGetRequest, TimeRecordsGet, TimeRecordGet } from '../axios/time';
-import { set } from "../redux/slice/calendar";
+import { login, setTotalMoney } from "../redux/slice/calendar";
 import { Modal } from './modal';
 
 export function getMonthDates(currentMonth: number): Date[][] {
@@ -60,7 +60,7 @@ function TableBody(props: { setOnModal: (value: boolean) => void }): JSX.Element
     const timeRecordsGet = async (start: string, end: string) => {
         await axios(TimeRecordsGetRequest(start, end)).then((result) => {
             if (result.status === 200) {
-                dispatch(set(true));
+                dispatch(login(true));
                 setTimeRecords(result.data);
             } else {
                 console.log(result);
@@ -68,7 +68,7 @@ function TableBody(props: { setOnModal: (value: boolean) => void }): JSX.Element
             firstCallDone.current = false;
         }).catch((error) => {
             if (error.response.status === 401) {
-                dispatch(set(false));
+                dispatch(login(false));
             } else {
                 console.log(error);
             }
@@ -93,6 +93,29 @@ function TableBody(props: { setOnModal: (value: boolean) => void }): JSX.Element
 
         // Reduxにマップ形式でcacheする 
     }, [currentMonthDates]);
+
+
+    const totalMoneyCount = () => {
+        const currentMonth = currentMonthDates[2][3].getMonth();
+        let totalMoney = 0;
+        currentMonthDates.forEach((row: Date[]) => {
+            row.forEach((date: Date) => {
+                if (currentMonth !== date.getMonth()) {
+                    return;
+                }
+                timeRecords?.[formatDate(date)]?.map((timeRecord: TimeRecordGet) => (
+                    totalMoney += (timeRecord.recovery_money - timeRecord.investment_money)
+                ))
+            })
+        })
+        dispatch(setTotalMoney(totalMoney));
+    }
+    const totalMoney = async () => {
+        await totalMoneyCount();
+    }
+    useEffect(() => {
+        totalMoney();
+    }, [timeRecords])
 
     return <>
         <tbody>
@@ -130,12 +153,11 @@ function CalendarDate(props: { date: Date, timeRecord: TimeRecordGet[] | undefin
                 {format(date, "dd")}
             </div>
             {
-                props.timeRecord?.map((timeRecord: TimeRecordGet, i: number) => {
-                    if (i > 3) return;
-                    return <TimeRecord key={timeRecord.id} {...timeRecord} />
-                })
+                props.timeRecord?.map((timeRecord: TimeRecordGet, i: number) => (
+                    <TimeRecord key={timeRecord.id} i={i} money={timeRecord.recovery_money - timeRecord.investment_money} />
+                ))
             }
-        </div>
+        </div >
     </td>
 }
 
@@ -154,8 +176,11 @@ function getSelectClass(fomatDate: string, selectedDate: string): string {
     return '';
 }
 
-function TimeRecord(timeRecord: TimeRecordGet): JSX.Element {
-    const money = timeRecord.recovery_money - timeRecord.investment_money;
+function TimeRecord(props: { i: number, money: number }): JSX.Element {
+    if (props.i > 3) {
+        return <></>
+    }
+    const money = props.money;
     return <>
         <div className={`timeRecord ${money >= 0 ? "plus" : ""}`}>{money}</div >
     </>

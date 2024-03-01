@@ -39,11 +39,26 @@ export const loginSlice = createSlice({
         value: false,
     },
     reducers: {
-        set: (state, date) => {
+        login: (state, date) => {
             state.value = date.payload;
         },
     },
 });
 
-export const { set } = loginSlice.actions;
+export const { login } = loginSlice.actions;
 export const loginReducer = loginSlice.reducer;
+
+export const totalMoneySlice = createSlice({
+    name: 'totalManey',
+    initialState: {
+        value: 0,
+    },
+    reducers: {
+        setTotalMoney: (state, date) => {
+            state.value = date.payload;
+        }
+    },
+});
+
+export const { setTotalMoney } = totalMoneySlice.actions;
+export const totalMoneyReducer = totalMoneySlice.reducer;

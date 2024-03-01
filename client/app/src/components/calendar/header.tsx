@@ -10,11 +10,12 @@ export function CalendarHeader(): React.ReactElement {
     const currentMonthDiff = useSelector((state) => state.monthDiff.value);
     const currentYearMonth = yearMonthToString(currentMonthDiff);
     const dispatch = useDispatch();
+    const totalMoney = useSelector((state) => state.totalMoney.value);
 
     return <>
         <div className="header">
             <div>{currentYearMonth}</div>
-            <div>+10000円</div> {/* serverで計算する */}
+            <div>{totalMoney}円</div> {/* serverで計算する */}
             <button onClick={() => dispatch(decrement())}><FaArrowLeft /></button>
             <button onClick={() => dispatch(increment())}><FaArrowRight /></button>
         </div>
