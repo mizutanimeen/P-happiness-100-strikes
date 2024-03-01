@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSelector } from "../redux/store";
-import { BackHomeHeader } from "../header/header";
+import { RecordHeader } from "../header/header";
 import { formatTime } from "../util/util";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -171,7 +171,7 @@ export function DetailRecord() {
 
     return (
         <div className="container">
-            <BackHomeHeader />
+            <RecordHeader id={id} />
             {
                 (isLoading) ?
                     <>

@@ -156,19 +156,8 @@ func TimeRecordDelete(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// ユーザーが指定のレコードを持っているか確認
-		timeRecord, err := DB.TimeRecordGetByID(timeRecordID, id)
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		if timeRecord == nil {
-			http.Error(w, "Record not found", http.StatusBadRequest)
-			return
-		}
-
-		if err := DB.TimeRecordDelete(timeRecordID); err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		if err := DB.TimeRecordDelete(timeRecordID, id); err != nil {
+			http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
 

@@ -83,3 +83,18 @@ export function TimeRecordUpdateRequest(data: TimeRecordUpdate) {
         withCredentials: true
     }
 };
+
+export function TimeRecordDeleteRequest(id: string) {
+    return {
+        method: 'DELETE',
+        url: `${baseURL}/api/v1/records/times`,
+        params: {
+            "time_record_id": id
+        },
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "*/*"
+        },
+        withCredentials: true
+    }
+}

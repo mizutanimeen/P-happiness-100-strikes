@@ -21,7 +21,7 @@ type DB interface {
 	TimeRecordGetByID(id string, userID string) (*model.TimeRecord, error)
 	TimeRecordCreate(userID string, time time.Time, investmentMoney int, recoveryMoney int) (int64, error)
 	TimeRecordUpdate(id string, time time.Time, investmentMoney int, recoveryMoney int) error
-	TimeRecordDelete(id string) error
+	TimeRecordDelete(id string, userID string) error
 
 	MachinesGet(userID string) ([]*model.Machine, error)
 	MachineGetByID(id string, userID string) (*model.Machine, error)

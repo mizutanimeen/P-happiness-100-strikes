@@ -83,14 +83,14 @@ func (s *Mysql) TimeRecordUpdate(id string, time time.Time, investmentMoney int,
 	return nil
 }
 
-func (s *Mysql) TimeRecordDelete(id string) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE %s=?", timeRecordTable, timeRecordID)
+func (s *Mysql) TimeRecordDelete(id string, userID string) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s=? AND %s=?", timeRecordTable, timeRecordID, timeRecordUserID)
 	delete, err := s.DB.Prepare(query)
 	if err != nil {
 		return fmt.Errorf("error prepare: %w", err)
 	}
 
-	if _, err := delete.Exec(id); err != nil {
+	if _, err := delete.Exec(id, userID); err != nil {
 		return fmt.Errorf("error delete: %w", err)
 	}
 	return nil
