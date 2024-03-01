@@ -31,7 +31,6 @@ export function getMonthDates(currentMonthDiff: number): Date[][] {
 }
 
 export function CalendarBody(): JSX.Element {
-    const [onModal, setOnModal] = useState<boolean>(false);
     return <>
         <table className="calendarBody">
             <thead>
@@ -45,18 +44,18 @@ export function CalendarBody(): JSX.Element {
                     <th>土</th>
                 </tr>
             </thead>
-            <TableBody setOnModal={setOnModal} />
+            <TableBody />
         </table>
-        <Modal onModal={onModal} setOnModal={setOnModal} />
     </ >
 }
 
-function TableBody(props: { setOnModal: (value: boolean) => void }): JSX.Element {
+function TableBody(): JSX.Element {
     const [currentMonthDates, setCurrentMonthDates] = useState<Date[][]>(getMonthDates(0));
     const currentMonthDiff = useSelector((state) => state.monthDiff.value);
     const firstCallDone = React.useRef(false);
     const [timeRecords, setTimeRecords] = useState<TimeRecordsGet>();
     const dispatch = useDispatch();
+    const [onModal, setOnModal] = useState<boolean>(false);
     // cache timeRecords
     const cacheByMonthDiff: CacheByMonthDiff = useSelector((state) => state.timeRecords.cache);
     const timeRecordsByMonthDiff: TimeRecordsByMonthDiff = useSelector((state) => state.timeRecords.value);
@@ -93,12 +92,9 @@ function TableBody(props: { setOnModal: (value: boolean) => void }): JSX.Element
             // TODO: timerecordはdaterecordの中から呼ぶ
             const timeRecords: TimeRecordsGet = timeRecordsByMonthDiff[currentMonthDiff.toString()]
             if (cacheByMonthDiff[currentMonthDiff.toString()] && timeRecords) {
-                console.log("use cache")
                 setTimeRecords(timeRecords)
                 firstCallDone.current = false;
             } else {
-                console.log("get api")
-                console.log(start, end)
                 timeRecordsGet(start, end);
             }
         }
@@ -133,13 +129,14 @@ function TableBody(props: { setOnModal: (value: boolean) => void }): JSX.Element
     }, [timeRecords])
 
     return <>
+        <Modal timeRecords={timeRecords} onModal={onModal} setOnModal={setOnModal} />
         <tbody>
             {
                 currentMonthDates.map((row: Date[], i: number) => (
                     <tr key={i}>
                         {
                             row.map((date: Date, j: number) => (
-                                <CalendarDate key={j} date={date} timeRecord={timeRecords?.[formatDate(date)]} setOnModal={props.setOnModal} />
+                                <CalendarDate key={j} date={date} timeRecord={timeRecords?.[formatDate(date)]} setOnModal={setOnModal} />
                             ))
                         }
                     </tr>

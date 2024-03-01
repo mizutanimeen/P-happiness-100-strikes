@@ -7,3 +7,10 @@ export function formatDate(date: Date): string {
 export function formatTime(date: Date): string {
     return `${date.getHours() < 10 ? "0" + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds()}`;
 }
+
+// yyyy-mm-ddThh:mm:ssZ -> hh:mm
+export function formatStringTime(dateTime: string): string {
+    //split
+    const time = dateTime.split("T")[1];
+    return time.slice(0, 5);
+}
