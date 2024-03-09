@@ -6,14 +6,17 @@
 }
 
 .date {
+    height: 20%;
+    width: 14.285714285714285714285714285714%;
     border: solid 1px;
     border-color: #DCDCDC;
     text-align: center;
-    vertical-align: top;
-    height: 20%;
-    width: calc(100% / 7);
     padding: 0;
     margin: 0;
+}
+
+.date>div {
+    height: 100%;
 }
 
 .today {
@@ -24,8 +27,17 @@
     outline: 1px solid orange;
 }
 
-.timeRecord {
+.dateDate {
     height: 20%;
+    vertical-align: top;
+}
+
+.dateTR {
+    height: 50%;
+}
+
+.timeRecord {
+    height: 30%;
     background-color: rgb(255, 72, 72);
     color: white;
     border-radius: 5px;
@@ -36,4 +48,17 @@
 .timeRecord.plus {
     color: black;
     background-color: skyblue;
+}
+
+.dateDR {
+    vertical-align: bottom;
+    height: 30%;
+}
+
+.dateDR div {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3em;
 }

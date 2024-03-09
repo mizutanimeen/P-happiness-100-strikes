@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { formatDate } from '../../util/util';
 import { TimeRecordsGet } from '../../axios/time';
+import { DateRecordsGet } from '../../axios/date';
 
 export const currentMonthDiffSlice = createSlice({
     name: 'currentMonthDiff',
@@ -94,3 +95,30 @@ export const timeRecordsSlice = createSlice({
 
 export const { setTimeRecordsByMonthDiff, setTRCache, resetTR } = timeRecordsSlice.actions;
 export const timeRecordsReducer = timeRecordsSlice.reducer;
+
+export type DateRecordsByMonthDiff = {
+    [monthDiff: string]: DateRecordsGet;
+}
+
+export const dateRecordsSlice = createSlice({
+    name: 'dateRecords',
+    initialState: {
+        value: {} as DateRecordsByMonthDiff,
+        cache: {} as CacheByMonthDiff,
+    },
+    reducers: {
+        setDateRecordsByMonthDiff: (state, data) => {
+            state.value[data.payload.monthDiff] = data.payload.data;
+        },
+        setDRCache: (state, data) => {
+            state.cache[data.payload.monthDiff] = data.payload.data;
+        },
+        resetDR: (state) => {
+            state.value = {};
+            state.cache = {};
+        },
+    },
+});
+
+export const { setDateRecordsByMonthDiff, setDRCache, resetDR } = dateRecordsSlice.actions;
+export const dateRecordsReducer = dateRecordsSlice.reducer;

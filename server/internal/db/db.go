@@ -14,7 +14,7 @@ type DB interface {
 	DateRecordsGet(userID string, startDate time.Time, endDate time.Time) ([]*model.DateRecord, error)
 	DateRecordGetByID(id string, userID string) (*model.DateRecord, error)
 	DateRecordCreate(userID string, date time.Time, happiness int) error
-	DateRecordUpdate(id string, happiness int) error
+	DateRecordUpdate(id string, userID string, happiness int) error
 	DateRecordDelete(id string) error
 
 	TimeRecordsGet(userID string, startDate time.Time, endDate time.Time) ([]*model.TimeRecord, error)

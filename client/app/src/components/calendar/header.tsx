@@ -14,10 +14,12 @@ export function CalendarHeader(): React.ReactElement {
 
     return <>
         <div className="header">
-            <div>{currentYearMonth}</div>
-            <div>{totalMoney}円</div> {/* serverで計算する */}
-            <button onClick={() => dispatch(decrement())}><FaArrowLeft /></button>
-            <button onClick={() => dispatch(increment())}><FaArrowRight /></button>
+            <div className="headerYear">{currentYearMonth}</div>
+            <div className="headerTotal">{totalMoney}円</div>
+            <div className="headerButtons">
+                <button onClick={() => dispatch(decrement())}><FaArrowLeft /></button>
+                <button onClick={() => dispatch(increment())}><FaArrowRight /></button>
+            </div>
         </div>
     </>
 }

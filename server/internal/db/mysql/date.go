@@ -63,14 +63,14 @@ func (s *Mysql) DateRecordCreate(userID string, date time.Time, happiness int) e
 	return nil
 }
 
-func (s *Mysql) DateRecordUpdate(id string, happiness int) error {
-	query := fmt.Sprintf("UPDATE %s SET %s = ? WHERE %s = ?", dateRecordTable, dateRecordHappiness, dateRecordUserID)
+func (s *Mysql) DateRecordUpdate(id string, userID string, happiness int) error {
+	query := fmt.Sprintf("UPDATE %s SET %s = ? WHERE %s = ? AND %s = ?", dateRecordTable, dateRecordHappiness, dateRecordID, dateRecordUserID)
 	update, err := s.DB.Prepare(query)
 	if err != nil {
 		return fmt.Errorf("error prepare: %w", err)
 	}
 
-	if _, err := update.Exec(happiness, id); err != nil {
+	if _, err := update.Exec(happiness, id, userID); err != nil {
 		return fmt.Errorf("error update: %w", err)
 	}
 	return nil

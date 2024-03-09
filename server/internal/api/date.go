@@ -2,11 +2,13 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db"
+	"github.com/mizutanimeen/P-happiness-100-strikes/internal/db/model"
 )
 
 func DateRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
@@ -25,9 +27,16 @@ func DateRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		records := make(map[string]model.DateRecord)
+		for _, record := range dateRecords {
+			date := record.Date.Format("2006-01-02")
+			fmt.Println(date)
+			records[date] = *record
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(dateRecords)
+		json.NewEncoder(w).Encode(records)
 	}
 }
 
@@ -81,13 +90,7 @@ func DateRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
-		record, err := DB.DateRecordGetByID(dateRecordReq.ID, id)
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		if err := DB.DateRecordUpdate(record.ID, dateRecordReq.Happiness); err != nil {
+		if err := DB.DateRecordUpdate(dateRecordReq.ID, id, dateRecordReq.Happiness); err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}

@@ -7,11 +7,13 @@ import { useDispatch } from "react-redux";
 import { select } from "../redux/slice/calendar";
 import { formatDate } from '../util/util';
 import axios from 'axios';
-import { DateRecordsGetRequest, DateRecords } from '../axios/date';
+import { DateRecordsGetRequest, DateRecordsGet } from '../axios/date';
 import { TimeRecordsGetRequest, TimeRecordsGet, TimeRecordGet } from '../axios/time';
 import { login, setTotalMoney } from "../redux/slice/calendar";
-import { TimeRecordsByMonthDiff, setTimeRecordsByMonthDiff, setTRCache, CacheByMonthDiff } from "../redux/slice/calendar";
-import { Modal } from './modal';
+import { TimeRecordsByMonthDiff, setTimeRecordsByMonthDiff, setTRCache, CacheByMonthDiff, DateRecordsByMonthDiff, setDateRecordsByMonthDiff, setDRCache } from "../redux/slice/calendar";
+import { Modal } from './modal/modal';
+import { CalendarDate } from './body/date';
+import { on } from "events";
 
 export function getMonthDates(currentMonthDiff: number): Date[][] {
     const newDate = new Date();
@@ -50,22 +52,38 @@ export function CalendarBody(): JSX.Element {
 }
 
 function TableBody(): JSX.Element {
-    const [currentMonthDates, setCurrentMonthDates] = useState<Date[][]>(getMonthDates(0));
-    const currentMonthDiff = useSelector((state) => state.monthDiff.value);
-    const firstCallDone = React.useRef(false);
-    const [timeRecords, setTimeRecords] = useState<TimeRecordsGet>();
     const dispatch = useDispatch();
+    const firstCallDone = React.useRef(false);
+    const currentMonthDiff = useSelector((state) => state.monthDiff.value);
+
+    const [currentMonthDates, setCurrentMonthDates] = useState<Date[][]>(getMonthDates(0));
+
     const [onModal, setOnModal] = useState<boolean>(false);
-    // cache timeRecords
-    const cacheByMonthDiff: CacheByMonthDiff = useSelector((state) => state.timeRecords.cache);
-    const timeRecordsByMonthDiff: TimeRecordsByMonthDiff = useSelector((state) => state.timeRecords.value);
+
+    // timeRecords
+    const [timeRecords, setTimeRecords] = useState<TimeRecordsGet>();
+    const cacheTR: CacheByMonthDiff = useSelector((state) => state.timeRecords.cache);
+    const cacheTRData: TimeRecordsByMonthDiff = useSelector((state) => state.timeRecords.value);
+    // dateRecords
+    const [dateRecords, setDateRecords] = useState<DateRecordsGet>();
+    const cacheDR: CacheByMonthDiff = useSelector((state) => state.dateRecords.cache);
+    const cacheDRData: DateRecordsByMonthDiff = useSelector((state) => state.dateRecords.value);
+
+    const dateRecordsGet = async (start: string, end: string) => {
+        await axios(DateRecordsGetRequest(start, end)).then((result) => {
+            setDateRecords(result.data);
+        }).catch((error) => {
+            if (error.response.status === 401) {
+            } else {
+                console.log(error);
+            }
+        });
+    }
 
     const timeRecordsGet = async (start: string, end: string) => {
         await axios(TimeRecordsGetRequest(start, end)).then((result) => {
-            if (result.status === 200) {
-                dispatch(login(true));
-                setTimeRecords(result.data);
-            }
+            dispatch(login(true));
+            setTimeRecords(result.data);
             firstCallDone.current = false;
         }).catch((error) => {
             if (error.response.status === 401) {
@@ -89,9 +107,9 @@ function TableBody(): JSX.Element {
         // strict modeのための対策
         if (!firstCallDone.current) {
             firstCallDone.current = true;
-            // TODO: timerecordはdaterecordの中から呼ぶ
-            const timeRecords: TimeRecordsGet = timeRecordsByMonthDiff[currentMonthDiff.toString()]
-            if (cacheByMonthDiff[currentMonthDiff.toString()] && timeRecords) {
+
+            const timeRecords: TimeRecordsGet = cacheTRData[currentMonthDiff.toString()]
+            if (cacheTR[currentMonthDiff.toString()] && timeRecords) {
                 setTimeRecords(timeRecords)
                 firstCallDone.current = false;
             } else {
@@ -122,21 +140,38 @@ function TableBody(): JSX.Element {
     // タイムレコードが更新されたら合計金額を更新、タイムレコードをキャッシュ
     useEffect(() => {
         totalMoney();
-        if (!cacheByMonthDiff[currentMonthDiff.toString()] && timeRecords) {
+        if (!cacheTR[currentMonthDiff.toString()] && timeRecords) {
             dispatch(setTimeRecordsByMonthDiff({ monthDiff: currentMonthDiff.toString(), data: timeRecords }));
             dispatch(setTRCache({ monthDiff: currentMonthDiff.toString(), data: true }));
         }
-    }, [timeRecords])
+
+        const start = formatDate(currentMonthDates[0][0]);
+        const end = formatDate(currentMonthDates[4][6]);
+        const dateRecords: DateRecordsGet = cacheDRData[currentMonthDiff.toString()]
+        if (cacheDR[currentMonthDiff.toString()] && dateRecords) {
+            setDateRecords(dateRecords)
+        } else {
+            //TODO: 401出ないようにtimeRecordと呼ぶタイミング調整する
+            dateRecordsGet(start, end);
+        }
+    }, [timeRecords, onModal])
+
+    useEffect(() => {
+        if (!cacheDR[currentMonthDiff.toString()] && dateRecords) {
+            dispatch(setDateRecordsByMonthDiff({ monthDiff: currentMonthDiff.toString(), data: dateRecords }));
+            dispatch(setDRCache({ monthDiff: currentMonthDiff.toString(), data: true }));
+        }
+    }, [dateRecords]);
 
     return <>
-        <Modal timeRecords={timeRecords} onModal={onModal} setOnModal={setOnModal} />
+        <Modal timeRecords={timeRecords} dateRecords={dateRecords} onModal={onModal} setOnModal={setOnModal} />
         <tbody>
             {
                 currentMonthDates.map((row: Date[], i: number) => (
                     <tr key={i}>
                         {
                             row.map((date: Date, j: number) => (
-                                <CalendarDate key={j} date={date} timeRecord={timeRecords?.[formatDate(date)]} setOnModal={setOnModal} />
+                                <CalendarDate key={j} date={date} timeRecord={timeRecords?.[formatDate(date)]} dateRecord={dateRecords?.[formatDate(date)]} setOnModal={setOnModal} />
                             ))
                         }
                     </tr>
@@ -146,54 +181,3 @@ function TableBody(): JSX.Element {
     </>
 }
 
-function CalendarDate(props: { date: Date, timeRecord: TimeRecordGet[] | undefined, setOnModal: (value: boolean) => void }): JSX.Element {
-    const dispatch = useDispatch();
-    const selectedDate = useSelector((state) => state.selectDate.value);
-    // TODO: モーダルを表示する
-    const selectDate = (formatDate: string) => {
-        if (selectedDate === formatDate) {
-            props.setOnModal(true);
-        }
-        dispatch(select(formatDate));
-    }
-
-    const date = props.date;
-    const fomatDate = formatDate(props.date);
-    return <td key={fomatDate} className={`date ${getTodayClass(fomatDate)} ${getSelectClass(fomatDate, selectedDate)}`} onClick={() => selectDate(fomatDate)}>
-        <div>
-            <div className="dateDate">
-                {format(date, "dd")}
-            </div>
-            {
-                props.timeRecord?.map((timeRecord: TimeRecordGet, i: number) => (
-                    <TimeRecordComponent key={timeRecord.id} i={i} money={timeRecord.recovery_money - timeRecord.investment_money} />
-                ))
-            }
-        </div >
-    </td>
-}
-
-function getTodayClass(fomatDate: string): string {
-    const today = new Date();
-    if (fomatDate === formatDate(today)) {
-        return 'today';
-    }
-    return '';
-}
-
-function getSelectClass(fomatDate: string, selectedDate: string): string {
-    if (selectedDate === fomatDate) {
-        return 'selected';
-    }
-    return '';
-}
-
-function TimeRecordComponent(props: { i: number, money: number }): JSX.Element {
-    if (props.i > 3) {
-        return <></>
-    }
-    const money = props.money;
-    return <>
-        <div className={`timeRecord ${money >= 0 ? "plus" : ""}`}>{money}</div >
-    </>
-}

@@ -7,7 +7,7 @@ import { User, UserGetRequest } from '../axios/user';
 import axios from 'axios';
 import "../util/css/util.css";
 import { useDispatch } from "react-redux";
-import { setTRCache, resetTR } from "../redux/slice/calendar";
+import { resetTR, resetDR } from "../redux/slice/calendar";
 
 export function Register(): JSX.Element {
     const dispatch = useDispatch();
@@ -44,6 +44,7 @@ export function Register(): JSX.Element {
             .then(function (response) {
                 if (response.status === 201) {
                     dispatch(resetTR());
+                    dispatch(resetDR());
                     navigate("/")
                 }
             })
@@ -104,6 +105,7 @@ export function Login(): JSX.Element {
             .then(function (response) {
                 if (response.status === 200) {
                     dispatch(resetTR());
+                    dispatch(resetDR());
                     navigate("/")
                 }
             })
@@ -171,6 +173,7 @@ export function Account(): JSX.Element {
             .then(function (response) {
                 if (response.status === 200) {
                     dispatch(resetTR());
+                    dispatch(resetDR());
                     navigate("/")
                 }
             })

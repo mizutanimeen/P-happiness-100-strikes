@@ -1,0 +1,48 @@
+.happinessContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1em;
+}
+
+.happinessContainer>div {
+    width: 100%;
+    text-align: center;
+}
+
+.happinessTitle {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.happinessButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.happinessButtons>button {
+    background: none;
+    padding: 1em 0;
+    width: 100%;
+    border: none;
+    font-size: 2em;
+    color: gray;
+}
+
+.happinessButtons>button.active {
+    color: orange;
+}
+
+.red {
+    color: red;
+}
+
+.black {
+    color: black;
+}
+
+.blue {
+    color: blue;
+}

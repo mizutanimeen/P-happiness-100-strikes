@@ -9,7 +9,25 @@
 }
 
 .header div {
+    width: 100%;
+    text-align: center;
+}
+
+.headerYear {
+    font-size: 1.2em;
+}
+
+.headerTotal {
     font-size: 1.5em;
+}
+
+.headerButtons {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-around;
+    justify-content: space-around;
+    align-items: center;
+
 }
 
 .header button {
