@@ -36,7 +36,7 @@ export function CalendarFooter(): JSX.Element {
         return <>
             <div className="footer login">
                 <Link to="/account" className="account"><button><MdAccountCircle /></button></Link>
-                <Link to="/" className="statistics"><button>統計</button></Link>
+                <Link to="/statistics" className="statistics"><button>統計</button></Link>
                 <div className="plus"> <button onClick={createTimeRecord}> <CiCirclePlus /></button></div>
             </div >
         </>

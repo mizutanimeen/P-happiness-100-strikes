@@ -16,6 +16,9 @@ export const icons = [
     <FaRegFaceGrinBeam />
 ]
 
+// TODO: 新規作成 -> 同じ日付を更新 -> エラー
+// TODO: happiness が同じ値の場合、削除する
+
 export function Happiness(props: { dateRecord: DateRecordGet | undefined, setOnModal: (value: boolean) => void }): JSX.Element {
     const dispatch = useDispatch();
     const currentMonthDiff = useSelector((state) => state.monthDiff.value);

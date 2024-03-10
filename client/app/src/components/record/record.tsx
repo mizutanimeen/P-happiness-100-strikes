@@ -127,11 +127,8 @@ export function DetailRecord() {
         }
 
         axios(TimeRecordUpdateRequest(data)).then((result) => {
-            if (result.status === 200) {
-                alert("更新しました");
-            } else {
-                console.log(result);
-            }
+            navigate("/");
+            alert("更新しました");
         }).catch((error) => {
             console.log(error);
         }

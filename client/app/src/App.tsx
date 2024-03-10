@@ -7,6 +7,7 @@ import { Register, Login } from './components/account/account';
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
 import { DetailRecord } from './components/record/record';
 import { Account } from './components/account/account';
+import { Statistics } from './components/statistics/statistics';
 
 const queryClient = new QueryClient()
 
@@ -23,7 +24,8 @@ export default function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/account" element={<Account />} />
-                <Route path='*'>404 Not Found</Route>
+                <Route path="/statistics" element={<Statistics />} />
+                <Route path='*' element={<h1>404 Not Found</h1>} />
               </Routes>
             </BrowserRouter>
           </Provider>

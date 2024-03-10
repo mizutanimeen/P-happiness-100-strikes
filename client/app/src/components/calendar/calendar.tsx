@@ -13,8 +13,3 @@ export function Calendar() {
         </>
     )
 }
-
-/*
-https://almonta2021blog.com/react-calendar-javascript/
-https://zenn.dev/t_keshi/articles/react-query-prescription
-*/
