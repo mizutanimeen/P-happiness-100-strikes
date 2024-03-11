@@ -9,6 +9,7 @@ import "../util/css/util.css";
 import { useDispatch } from "react-redux";
 import { resetTR, resetDR } from "../redux/slice/calendar";
 
+// TODO: 登録済みの方はこちらを作る。ログインも同様
 export function Register(): JSX.Element {
     const dispatch = useDispatch();
 

@@ -89,6 +89,7 @@ export function DetailRecord() {
         setRecoveryMoney(timeRecords.recovery_money);
     }, [timeRecords]);
 
+    // TODO: この関数は共通化
     const setInputInvestmentMoney = (value: string) => {
         let n = Number(value);
         if (isNaN(n)) {
