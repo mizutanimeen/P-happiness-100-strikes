@@ -50,7 +50,7 @@ export function CalendarBody(): JSX.Element {
 
 function TableBody(): JSX.Element {
     const dispatch = useDispatch();
-    const firstCallDone = React.useRef(false);
+    const call = React.useRef(false);
     const currentMonthDiff = useSelector((state) => state.monthDiff.value);
 
     const [currentMonthDates, setCurrentMonthDates] = useState<Date[][]>(getMonthDates(0));
@@ -66,55 +66,75 @@ function TableBody(): JSX.Element {
     const cacheDR: CacheByMonthDiff = useSelector((state) => state.dateRecords.cache);
     const cacheDRData: DateRecordsByMonthDiff = useSelector((state) => state.dateRecords.value);
 
-    const dateRecordsGet = async (start: string, end: string) => {
-        await axios(DateRecordsGetRequest(start, end)).then((result) => {
-            setDateRecords(result.data);
-        }).catch((error) => {
-            if (error.response.status === 401) {
-            } else {
-                console.log(error);
-            }
-        });
-    }
-
-    const timeRecordsGet = async (start: string, end: string) => {
-        await axios(TimeRecordsGetRequest(start, end)).then((result) => {
+    const dateRecordsGet = (start: string, end: string) => {
+        return axios(DateRecordsGetRequest(start, end)).then((result) => {
             dispatch(login(true));
-            setTimeRecords(result.data);
-            firstCallDone.current = false;
+            setDateRecords(result.data);
         }).catch((error) => {
             if (error.response.status === 401) {
                 dispatch(login(false));
             } else {
                 console.log(error);
             }
-            firstCallDone.current = false;
+        });
+    }
+
+    const timeRecordsGet = (start: string, end: string) => {
+        return axios(TimeRecordsGetRequest(start, end)).then((result) => {
+            dispatch(login(true));
+            setTimeRecords(result.data);
+        }).catch((error) => {
+            if (error.response.status === 401) {
+                dispatch(login(false));
+            } else {
+                console.log(error);
+            }
         });
     };
 
-    // 月が替わったら日付マップを更新
-    // 日付マップが更新されたらタイムレコードを更新
+    const recordsUpdate = async (start: string, end: string) => {
+        const monthDiff: string = currentMonthDiff.toString();
+
+        if (cacheTR[monthDiff] && cacheTRData[monthDiff]) {
+            setTimeRecords(cacheTRData[monthDiff])
+        } else {
+            await timeRecordsGet(start, end);
+        }
+
+        if (cacheDR[monthDiff] && cacheDRData[monthDiff]) {
+            setDateRecords(cacheDRData[monthDiff])
+        } else {
+            await dateRecordsGet(start, end);
+        }
+        call.current = false;
+    }
+
+    // 月が替わったら日付マップを更新、レコードを更新
     useEffect(() => {
         const dateMap = getMonthDates(currentMonthDiff)
         setCurrentMonthDates(dateMap)
 
-        const start = formatDate(dateMap[0][0]);
-        const end = formatDate(dateMap[4][6]);
+        if (!call.current) {
+            call.current = true;
 
-        // strict modeのための対策
-        if (!firstCallDone.current) {
-            firstCallDone.current = true;
+            const start = formatDate(dateMap[0][0]);
+            const end = formatDate(dateMap[4][6]);
 
-            const timeRecords: TimeRecordsGet = cacheTRData[currentMonthDiff.toString()]
-            if (cacheTR[currentMonthDiff.toString()] && timeRecords) {
-                setTimeRecords(timeRecords)
-                firstCallDone.current = false;
-            } else {
-                timeRecordsGet(start, end);
-            }
+            recordsUpdate(start, end);
         }
     }, [currentMonthDiff]);
 
+    // happyのためにmodalが閉じたらレコードを更新
+    useEffect(() => {
+        if (!call.current && !onModal) {
+            call.current = true;
+
+            const start = formatDate(currentMonthDates[0][0]);
+            const end = formatDate(currentMonthDates[4][6]);
+
+            recordsUpdate(start, end);
+        }
+    }, [onModal]);
 
     const totalMoneyCount = () => {
         const currentMonth = currentMonthDates[2][3].getMonth();
@@ -134,25 +154,18 @@ function TableBody(): JSX.Element {
     const totalMoney = async () => {
         await totalMoneyCount();
     }
+
     // タイムレコードが更新されたら合計金額を更新、タイムレコードをキャッシュ
     useEffect(() => {
         totalMoney();
+
         if (!cacheTR[currentMonthDiff.toString()] && timeRecords) {
             dispatch(setTimeRecordsByMonthDiff({ monthDiff: currentMonthDiff.toString(), data: timeRecords }));
             dispatch(setTRCache({ monthDiff: currentMonthDiff.toString(), data: true }));
         }
+    }, [timeRecords])
 
-        const start = formatDate(currentMonthDates[0][0]);
-        const end = formatDate(currentMonthDates[4][6]);
-        const dateRecords: DateRecordsGet = cacheDRData[currentMonthDiff.toString()]
-        if (cacheDR[currentMonthDiff.toString()] && dateRecords) {
-            setDateRecords(dateRecords)
-        } else {
-            //TODO: 401出ないようにtimeRecordと呼ぶタイミング調整する
-            dateRecordsGet(start, end);
-        }
-    }, [timeRecords, onModal])
-
+    // 日付レコードが更新されたら日付レコードをキャッシュ
     useEffect(() => {
         if (!cacheDR[currentMonthDiff.toString()] && dateRecords) {
             dispatch(setDateRecordsByMonthDiff({ monthDiff: currentMonthDiff.toString(), data: dateRecords }));

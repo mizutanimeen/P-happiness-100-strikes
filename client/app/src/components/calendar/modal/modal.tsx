@@ -7,7 +7,14 @@ import { formatStringTime } from '../../util/util';
 import { useNavigate } from 'react-router-dom';
 import { Happiness } from './../modal/happiness';
 
-export function Modal(props: { timeRecords: TimeRecordsGet | undefined, dateRecords: DateRecordsGet | undefined, onModal: boolean, setOnModal: (value: boolean) => void }): JSX.Element {
+type modalProps = {
+    timeRecords: TimeRecordsGet | undefined;
+    dateRecords: DateRecordsGet | undefined;
+    onModal: boolean;
+    setOnModal: (value: boolean) => void;
+}
+
+export function Modal(props: modalProps): JSX.Element {
     const anchor = 'bottom';
     const { onModal, setOnModal } = props;
     const selectedDate = useSelector((state) => state.selectDate.value);
@@ -18,7 +25,7 @@ export function Modal(props: { timeRecords: TimeRecordsGet | undefined, dateReco
     useEffect(() => {
         setTimeRecords(props.timeRecords?.[selectedDate]);
         setDateRecord(props.dateRecords?.[selectedDate])
-    }, [selectedDate])
+    }, [selectedDate, props.timeRecords, props.dateRecords])
 
     // TODO: カレンダーの月移動に使えるかも
     const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -27,7 +34,6 @@ export function Modal(props: { timeRecords: TimeRecordsGet | undefined, dateReco
         ) {
             return;
         }
-
         setOnModal(open);
     };
 

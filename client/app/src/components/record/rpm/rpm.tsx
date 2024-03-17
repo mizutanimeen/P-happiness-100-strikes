@@ -10,7 +10,7 @@ import "./css/rpm.css";
 import "../../util/css/util.css";
 import { InvestmentForm, RPMForm } from "./form";
 
-export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Element {
+export function RPMRecord(props: { data: RPMRecordGet, id: number, loading: boolean }): JSX.Element {
     const id = props.id;
     const rpmRecord = props.data;
     // formの値
@@ -49,16 +49,21 @@ export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Elemen
 
     const call = useRef(false);
     useEffect(() => {
-        // strict modeのための対策
+        setInvestmentMoney(rpmRecord.investment_money);
+        setInvestmentBall(rpmRecord.investment_ball);
+        setStartRPM(rpmRecord.start_rpm);
+        setEndRPM(rpmRecord.end_rpm);
+    }, [rpmRecord]);
+
+    useEffect(() => {
         if (!call.current) {
+            if (props.loading) {
+                return;
+            }
             call.current = true;
             machineGet();
-            setInvestmentMoney(rpmRecord.investment_money);
-            setInvestmentBall(rpmRecord.investment_ball);
-            setStartRPM(rpmRecord.start_rpm);
-            setEndRPM(rpmRecord.end_rpm);
         }
-    }, [rpmRecord]);
+    }, [props.loading]);
 
     useEffect(() => {
         if (getMachine === undefined) {
