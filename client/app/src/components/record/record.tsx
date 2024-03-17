@@ -19,7 +19,7 @@ export function DetailRecord() {
     const currentMonthDiff = useSelector((state) => state.monthDiff.value);
     const navigate = useNavigate();
     const selectDate = useSelector((state) => state.selectDate.value);
-    const [dateTime, setDateTime] = useState(selectDate + " " + formatTime(new Date()));
+    const [dateTime, setDateTime] = useState(selectDate + "T" + formatTime(new Date()));
     const [investmentMoney, setInvestmentMoney] = useState(0);
     const [recoveryMoney, setRecoveryMoney] = useState(0);
     const step = 100;
