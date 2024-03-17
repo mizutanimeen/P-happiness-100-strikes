@@ -35,9 +35,9 @@ func (s *Mysql) MachinesGet(userID string) ([]*model.Machine, error) {
 	return machines, nil
 }
 
-func (s *Mysql) MachineGetByID(id string, userID string) (*model.Machine, error) {
-	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s = ?", machineTable, machineID, machineUserID)
-	row := s.DB.QueryRow(query, id, userID)
+func (s *Mysql) MachineGetByID(userID, id string) (*model.Machine, error) {
+	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s = ?", machineTable, machineUserID, machineID)
+	row := s.DB.QueryRow(query, userID, id)
 
 	var machine model.Machine
 	if err := row.Scan(&machine.ID, &machine.UserID, &machine.Name, &machine.Rate, &machine.Create_at, &machine.Update_at); err != nil {
@@ -69,27 +69,27 @@ func (s *Mysql) MachineCreate(userID string, name string, rate int) (int64, erro
 	return id, nil
 }
 
-func (s *Mysql) MachineUpdate(id string, name string, rate int) error {
-	query := fmt.Sprintf("UPDATE %s SET %s=?, %s=? WHERE %s=?", machineTable, machineName, machineRate, machineID)
+func (s *Mysql) MachineUpdate(userID string, id string, name string, rate int) error {
+	query := fmt.Sprintf("UPDATE %s SET %s=?, %s=? WHERE %s=? AND %s=?", machineTable, machineName, machineRate, machineUserID, machineID)
 	update, err := s.DB.Prepare(query)
 	if err != nil {
 		return fmt.Errorf("error prepare: %w", err)
 	}
 
-	if _, err := update.Exec(name, rate, id); err != nil {
+	if _, err := update.Exec(name, rate, userID, id); err != nil {
 		return fmt.Errorf("error exec: %w", err)
 	}
 	return nil
 }
 
-func (s *Mysql) MachineDelete(id string) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ?", machineTable, machineID)
+func (s *Mysql) MachineDelete(userID, id string) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ? AND %s = ?", machineTable, machineUserID, machineID)
 	delete, err := s.DB.Prepare(query)
 	if err != nil {
 		return fmt.Errorf("error prepare: %w", err)
 	}
 
-	if _, err := delete.Exec(id); err != nil {
+	if _, err := delete.Exec(userID, id); err != nil {
 		return fmt.Errorf("error exec: %w", err)
 	}
 	return nil

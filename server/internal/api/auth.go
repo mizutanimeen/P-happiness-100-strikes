@@ -125,7 +125,7 @@ func IsLoginHandler(s *session.Session) func(w http.ResponseWriter, r *http.Requ
 		}
 
 		if cookie.Value == "" {
-			http.Error(w, "Unauthorized: "+err.Error(), http.StatusUnauthorized)
+			http.Error(w, "Unauthorized:", http.StatusUnauthorized)
 			return
 		}
 

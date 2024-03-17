@@ -11,9 +11,9 @@ import (
 
 func MachinesGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
-		machines, err := DB.MachinesGet(id)
+		machines, err := DB.MachinesGet(userID)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -27,7 +27,7 @@ func MachinesGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 
 func MachinesGetByID(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		machineID := chi.URLParam(r, "machine_id")
 		if machineID == "" {
@@ -36,7 +36,7 @@ func MachinesGetByID(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// ユーザーがIDを持っているか確認
-		machine, err := DB.MachineGetByID(machineID, id)
+		machine, err := DB.MachineGetByID(userID, machineID)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -59,7 +59,7 @@ type createMachineRequest struct {
 
 func MachineCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		var machineReq createMachineRequest
 		if err := json.NewDecoder(r.Body).Decode(&machineReq); err != nil {
@@ -68,7 +68,7 @@ func MachineCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
-		machineID, err := DB.MachineCreate(id, machineReq.Name, machineReq.Rate)
+		machineID, err := DB.MachineCreate(userID, machineReq.Name, machineReq.Rate)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -88,7 +88,7 @@ type updateMachineRequest struct {
 
 func MachineUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		var machineReq updateMachineRequest
 		if err := json.NewDecoder(r.Body).Decode(&machineReq); err != nil {
@@ -97,18 +97,7 @@ func MachineUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
-		// ユーザーがIDを持っているか確認
-		machine, err := DB.MachineGetByID(machineReq.ID, id)
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		if machine == nil {
-			http.Error(w, "Machine not found", http.StatusBadRequest)
-			return
-		}
-
-		if err := DB.MachineUpdate(machineReq.ID, machineReq.Name, machineReq.Rate); err != nil {
+		if err := DB.MachineUpdate(userID, machineReq.ID, machineReq.Name, machineReq.Rate); err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
@@ -120,7 +109,7 @@ func MachineUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 
 func MachineDelete(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		machineID := r.URL.Query().Get("machine_id")
 		if machineID == "" {
@@ -128,18 +117,7 @@ func MachineDelete(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// ユーザーがIDを持っているか確認
-		machine, err := DB.MachineGetByID(machineID, id)
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		if machine == nil {
-			http.Error(w, "Machine not found", http.StatusBadRequest)
-			return
-		}
-
-		if err := DB.MachineDelete(machineID); err != nil {
+		if err := DB.MachineDelete(userID, machineID); err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}

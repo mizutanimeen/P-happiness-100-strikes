@@ -1,24 +1,15 @@
-#dev
-FROM golang:1.21.6
-
-# ホットリロード
-RUN go install github.com/cosmtrek/air@latest
-
-WORKDIR /src
-
 # # syntax=docker/dockerfile:1
-# FROM golang:1.21.6
+# FROM golang:1.21.6 as server
 
 # SHELL [ "/bin/sh", "-x", "-c" ]
 
 # WORKDIR /workdir
 
-# COPY . .
+# COPY ./server .
 
 # RUN go build \
 #     -ldflags="-s -w" \
 #     -trimpath \
-#     -mod=vendor \
 #     -o server
 
 # FROM ubuntu:22.04
@@ -51,3 +42,11 @@ WORKDIR /src
 # COPY --from=server /workdir/server /server
 
 # ENTRYPOINT [ "/server" ]
+
+#dev
+FROM golang:1.21.6
+
+# ホットリロード
+RUN go install github.com/cosmtrek/air@latest
+
+WORKDIR /src

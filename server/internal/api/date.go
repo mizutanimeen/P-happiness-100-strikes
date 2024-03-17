@@ -13,7 +13,7 @@ import (
 
 func DateRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		startTime, endTime, status, err := getStartEndDateQuery(r)
 		if err != nil {
@@ -21,7 +21,7 @@ func DateRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		dateRecords, err := DB.DateRecordsGet(id, startTime, endTime)
+		dateRecords, err := DB.DateRecordsGet(userID, startTime, endTime)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -47,7 +47,7 @@ type createDateRecordRequest struct {
 
 func DateRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		var dateRecordReq createDateRecordRequest
 		if err := json.NewDecoder(r.Body).Decode(&dateRecordReq); err != nil {
@@ -62,7 +62,7 @@ func DateRecordCreate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := DB.DateRecordCreate(id, date, dateRecordReq.Happiness); err != nil {
+		if err := DB.DateRecordCreate(userID, date, dateRecordReq.Happiness); err != nil {
 			log.Println(err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -81,7 +81,7 @@ type updateDateRecordRequest struct {
 
 func DateRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		var dateRecordReq updateDateRecordRequest
 		if err := json.NewDecoder(r.Body).Decode(&dateRecordReq); err != nil {
@@ -90,7 +90,7 @@ func DateRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
-		if err := DB.DateRecordUpdate(dateRecordReq.ID, id, dateRecordReq.Happiness); err != nil {
+		if err := DB.DateRecordUpdate(userID, dateRecordReq.ID, dateRecordReq.Happiness); err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}

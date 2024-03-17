@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { TimeRecordDeleteRequest } from '../axios/time';
 
+// TODO: ヘッダーのデザインを整える
 export function BackHomeHeader(): JSX.Element {
     return <>
         <div className="headerContainer">

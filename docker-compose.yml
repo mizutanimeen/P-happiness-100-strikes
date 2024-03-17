@@ -19,7 +19,7 @@ services:
     env_file:
       - ./.env
     restart: always
-    #dev
+    # #dev
     volumes:
       - ./client/app:/app
     tty: true
@@ -36,7 +36,7 @@ services:
     env_file:
       - ./.env
     restart: always
-    #dev
+    # #dev
     volumes:
       - ./server:/src
     #dev
@@ -48,6 +48,7 @@ services:
       - "3001:3001"
   proxy:
     container_name: nginx
+    restart: always
     build:
       context: .
       dockerfile: ./proxy/Dockerfile

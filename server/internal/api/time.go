@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -14,7 +13,7 @@ import (
 
 func TimeRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		startTime, endTime, status, err := getStartEndDateQuery(r)
 		if err != nil {
@@ -22,7 +21,7 @@ func TimeRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		timeRecords, err := DB.TimeRecordsGet(id, startTime, endTime)
+		timeRecords, err := DB.TimeRecordsGet(userID, startTime, endTime)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -42,11 +41,11 @@ func TimeRecordsGet(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 
 func TimeRecordsGetByID(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		timeRecordID := chi.URLParam(r, "times_id")
 
-		timeRecord, err := DB.TimeRecordGetByID(timeRecordID, id)
+		timeRecord, err := DB.TimeRecordGetByID(userID, timeRecordID)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -107,7 +106,7 @@ type updateTimeRecordRequest struct {
 
 func TimeRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		var timeRecordReq updateTimeRecordRequest
 		if err := json.NewDecoder(r.Body).Decode(&timeRecordReq); err != nil {
@@ -116,26 +115,13 @@ func TimeRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
-		log.Println(timeRecordReq.DateTime)
-
 		dateTime, err := time.Parse("2006-01-02T15:04:05", timeRecordReq.DateTime)
 		if err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 
-		// ユーザーが指定のレコードを持っているか確認
-		timeRecord, err := DB.TimeRecordGetByID(timeRecordReq.ID, id)
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		if timeRecord == nil {
-			http.Error(w, "Record not found", http.StatusBadRequest)
-			return
-		}
-
-		if err := DB.TimeRecordUpdate(timeRecordReq.ID, dateTime, timeRecordReq.InvestmentMoney, timeRecordReq.RecoveryMoney); err != nil {
+		if err := DB.TimeRecordUpdate(userID, timeRecordReq.ID, dateTime, timeRecordReq.InvestmentMoney, timeRecordReq.RecoveryMoney); err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
@@ -148,7 +134,7 @@ func TimeRecordUpdate(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 
 func TimeRecordDelete(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.Context().Value(CK_USERID).(string)
+		userID := r.Context().Value(CK_USERID).(string)
 
 		timeRecordID := r.URL.Query().Get("time_record_id")
 		if timeRecordID == "" {
@@ -156,7 +142,7 @@ func TimeRecordDelete(DB db.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := DB.TimeRecordDelete(timeRecordID, id); err != nil {
+		if err := DB.TimeRecordDelete(userID, timeRecordID); err != nil {
 			http.Error(w, "Internal Server Error: "+err.Error(), http.StatusInternalServerError)
 			return
 		}

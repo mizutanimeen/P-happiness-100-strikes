@@ -14,7 +14,7 @@ func RPMRecordsGet(db db.DB) http.HandlerFunc {
 		userID := r.Context().Value(CK_USERID).(string)
 		timeRecordID := chi.URLParam(r, "times_id")
 
-		rpmRecords, err := db.RPMRecordsGet(timeRecordID, userID)
+		rpmRecords, err := db.RPMRecordsGet(userID, timeRecordID)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("RPMRecordsGet: %v", err), http.StatusInternalServerError)
 			return
@@ -49,7 +49,7 @@ func RPMRecordCreate(db db.DB) http.HandlerFunc {
 		}
 		defer r.Body.Close()
 
-		if err := db.RPMRecordCreate(timeRecordID, userID, rpmRecordReq.InvestmentMoney, rpmRecordReq.InvestmentBall, rpmRecordReq.StartRPM, rpmRecordReq.EndRPM, rpmRecordReq.MachineID); err != nil {
+		if err := db.RPMRecordCreate(userID, timeRecordID, rpmRecordReq.InvestmentMoney, rpmRecordReq.InvestmentBall, rpmRecordReq.StartRPM, rpmRecordReq.EndRPM, rpmRecordReq.MachineID); err != nil {
 			http.Error(w, fmt.Sprintf("RPMRecordCreate: %v", err), http.StatusInternalServerError)
 			return
 		}
@@ -82,7 +82,7 @@ func RPMRecordUpdate(db db.DB) http.HandlerFunc {
 		}
 		defer r.Body.Close()
 
-		if err := db.RPMRecordUpdate(rpmRecordReq.ID, timeRecordID, userID, rpmRecordReq.InvestmentMoney, rpmRecordReq.InvestmentBall, rpmRecordReq.StartRPM, rpmRecordReq.EndRPM, rpmRecordReq.MachineID); err != nil {
+		if err := db.RPMRecordUpdate(userID, timeRecordID, rpmRecordReq.ID, rpmRecordReq.InvestmentMoney, rpmRecordReq.InvestmentBall, rpmRecordReq.StartRPM, rpmRecordReq.EndRPM, rpmRecordReq.MachineID); err != nil {
 			http.Error(w, fmt.Sprintf("RPMRecordUpdate: %v", err), http.StatusInternalServerError)
 			return
 		}
@@ -99,7 +99,7 @@ func RPMRecordDelete(db db.DB) http.HandlerFunc {
 		timeRecordID := chi.URLParam(r, "times_id")
 		id := chi.URLParam(r, "rpm_record_id")
 
-		if err := db.RPMRecordDelete(id, timeRecordID, userID); err != nil {
+		if err := db.RPMRecordDelete(userID, timeRecordID, id); err != nil {
 			http.Error(w, fmt.Sprintf("RPMRecordDelete: %v", err), http.StatusInternalServerError)
 			return
 		}

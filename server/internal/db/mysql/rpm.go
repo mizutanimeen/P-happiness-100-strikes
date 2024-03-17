@@ -20,9 +20,9 @@ var (
 	MYSQL_RPM_MACHINE_ID              = os.Getenv("MYSQL_MACHINE_ID")
 )
 
-func (s *Mysql) RPMRecordsGet(timeRecordID string, userID string) ([]*model.RPMRecord, error) {
-	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s = ?", MYSQL_RPM_RECORD_TABLE, MYSQL_RPM_TIME_RECORD_ID, MYSQL_RPM_USER_ID)
-	rows, err := s.DB.Query(query, timeRecordID, userID)
+func (s *Mysql) RPMRecordsGet(userID, timeRecordID string) ([]*model.RPMRecord, error) {
+	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s = ?", MYSQL_RPM_RECORD_TABLE, MYSQL_RPM_USER_ID, MYSQL_RPM_TIME_RECORD_ID)
+	rows, err := s.DB.Query(query, userID, timeRecordID)
 	if err != nil {
 		return nil, fmt.Errorf("error query: %w", err)
 	}
@@ -42,44 +42,44 @@ func (s *Mysql) RPMRecordsGet(timeRecordID string, userID string) ([]*model.RPMR
 	return rpmRecords, nil
 }
 
-func (s *Mysql) RPMRecordCreate(timeRecordID string, userID string, investmentMoney int, investmentBall int, startRPM int, endRPM int, machineID int) error {
+func (s *Mysql) RPMRecordCreate(userID string, timeRecordID string, investmentMoney int, investmentBall int, startRPM int, endRPM int, machineID int) error {
 	query := fmt.Sprintf("INSERT INTO %s(%s, %s, %s, %s, %s, %s, %s) VALUES(?,?,?,?,?,?,?)",
-		MYSQL_RPM_RECORD_TABLE, MYSQL_RPM_TIME_RECORD_ID, MYSQL_RPM_USER_ID, MYSQL_RPM_RECORD_INVESTMENT_MONEY, MYSQL_RPM_RECORD_INVESTMENT_BALL,
+		MYSQL_RPM_RECORD_TABLE, MYSQL_RPM_USER_ID, MYSQL_RPM_TIME_RECORD_ID, MYSQL_RPM_RECORD_INVESTMENT_MONEY, MYSQL_RPM_RECORD_INVESTMENT_BALL,
 		MYSQL_RPM_RECORD_START_RPM, MYSQL_RPM_RECORD_END_RPM, MYSQL_RPM_MACHINE_ID)
 	insert, err := s.DB.Prepare(query)
 	if err != nil {
 		return fmt.Errorf("error prepare: %w", err)
 	}
-	_, err = insert.Exec(timeRecordID, userID, investmentMoney, investmentBall, startRPM, endRPM, machineID)
+	_, err = insert.Exec(userID, timeRecordID, investmentMoney, investmentBall, startRPM, endRPM, machineID)
 	if err != nil {
 		return fmt.Errorf("error exec: %w", err)
 	}
 	return nil
 }
 
-func (s *Mysql) RPMRecordUpdate(id string, timeRecordID string, userID string, investmentMoney int, investmentBall int, startRPM int, endRPM int, machineID int) error {
+func (s *Mysql) RPMRecordUpdate(userID string, timeRecordID string, id string, investmentMoney int, investmentBall int, startRPM int, endRPM int, machineID int) error {
 	query := fmt.Sprintf("UPDATE %s SET %s=?, %s=?, %s=?, %s=?, %s=? WHERE %s=? AND %s=? AND %s=?",
 		MYSQL_RPM_RECORD_TABLE, MYSQL_RPM_RECORD_INVESTMENT_MONEY, MYSQL_RPM_RECORD_INVESTMENT_BALL,
 		MYSQL_RPM_RECORD_START_RPM, MYSQL_RPM_RECORD_END_RPM, MYSQL_RPM_MACHINE_ID,
-		MYSQL_RPM_RECORD_ID, MYSQL_RPM_TIME_RECORD_ID, MYSQL_RPM_USER_ID)
+		MYSQL_RPM_USER_ID, MYSQL_RPM_TIME_RECORD_ID, MYSQL_RPM_RECORD_ID)
 	update, err := s.DB.Prepare(query)
 	if err != nil {
 		return fmt.Errorf("error prepare: %w", err)
 	}
-	_, err = update.Exec(investmentMoney, investmentBall, startRPM, endRPM, machineID, id, timeRecordID, userID)
+	_, err = update.Exec(investmentMoney, investmentBall, startRPM, endRPM, machineID, userID, timeRecordID, id)
 	if err != nil {
 		return fmt.Errorf("error exec: %w", err)
 	}
 	return nil
 }
 
-func (s *Mysql) RPMRecordDelete(id string, timeRecordID string, userID string) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ? AND %s=? AND %s=?", MYSQL_RPM_RECORD_TABLE, MYSQL_RPM_RECORD_ID, MYSQL_RPM_TIME_RECORD_ID, MYSQL_RPM_USER_ID)
+func (s *Mysql) RPMRecordDelete(userID string, timeRecordID string, id string) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s = ? AND %s=? AND %s=?", MYSQL_RPM_RECORD_TABLE, MYSQL_RPM_USER_ID, MYSQL_RPM_TIME_RECORD_ID, MYSQL_RPM_RECORD_ID)
 	delete, err := s.DB.Prepare(query)
 	if err != nil {
 		return fmt.Errorf("error prepare: %w", err)
 	}
-	_, err = delete.Exec(id, timeRecordID, userID)
+	_, err = delete.Exec(userID, timeRecordID, id)
 	if err != nil {
 		return fmt.Errorf("error exec: %w", err)
 	}

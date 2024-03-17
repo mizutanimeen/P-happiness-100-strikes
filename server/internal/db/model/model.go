@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-// TODO: Jsonタグを追加する or リスポンス用の構造体を作成する
+// TODO: レスポンス用の構造体を作成する
 
 type User struct {
 	ID        string    `json:"id"`
