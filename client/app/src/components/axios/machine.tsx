@@ -20,13 +20,6 @@ export function MachineCreateRequest(data: MachineCreate) {
     }
 };
 
-export type MachinesGet = {
-    id: string;
-    user_id: string;
-    machine_name: string;
-    rate: number;
-}
-
 export const MachinesGetRequest = {
     method: 'GET',
     url: `${baseURL}/api/v1/machines`,

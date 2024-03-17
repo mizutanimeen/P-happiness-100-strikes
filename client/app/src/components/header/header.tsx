@@ -10,6 +10,7 @@ import axios from 'axios';
 import { TimeRecordDeleteRequest } from '../axios/time';
 
 // TODO: ヘッダーのデザインを整える
+// TODO: utilに移動する
 export function BackHomeHeader(): JSX.Element {
     return <>
         <div className="headerContainer">
@@ -18,6 +19,7 @@ export function BackHomeHeader(): JSX.Element {
     </>
 }
 
+// TODO: Recordに移動する
 export function RecordHeader(props: { id: string | undefined }): JSX.Element {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);

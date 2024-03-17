@@ -1,9 +1,9 @@
 import "../util/css/util.css";
 import { BackHomeHeader } from '../header/header';
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from 'axios';
 import { DateRecordsGetRequest, DateRecordsGet } from '../axios/date';
-import { TimeRecordsGetRequest, TimeRecordsGet, TimeRecordGet } from '../axios/time';
+import { TimeRecordsGetRequest, TimeRecordsGet } from '../axios/time';
 import { formatDate } from '../util/util';
 import { BarChart } from './chart';
 
@@ -14,7 +14,6 @@ export function Statistics(): JSX.Element {
     const [start, setStart] = useState<string>(formatDate(new Date(new Date().setDate(1))));
     const [end, setEnd] = useState<string>(formatDate(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)));
 
-    // TODO: async/await こういう書き方できるから、refactできる場所ありそう。
     const dateTimeRecordsGet = async (start: string, end: string) => {
         await axios(DateRecordsGetRequest(start, end)).then((result) => {
             setDateRecords(result.data)

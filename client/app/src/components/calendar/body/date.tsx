@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { format } from 'date-fns';
 import { useSelector } from "../../redux/store";
 import { useDispatch } from "react-redux";
@@ -7,7 +6,7 @@ import { formatDate } from '../../util/util';
 import { TimeRecordGet } from '../../axios/time';
 import { DateRecordGet } from '../../axios/date';
 import { Icon } from './icon';
-import '../css/body.css';
+import './css/body.css';
 
 export function CalendarDate(props: { date: Date, timeRecord: TimeRecordGet[] | undefined, dateRecord: DateRecordGet | undefined, setOnModal: (value: boolean) => void }): JSX.Element {
     const dispatch = useDispatch();

@@ -1,4 +1,4 @@
-import { CalendarBody } from './body'
+import { CalendarBody } from './body/body'
 import { CalendarHeader } from './header'
 import { CalendarFooter } from './footer'
 import './css/calendar.css';

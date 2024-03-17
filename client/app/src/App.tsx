@@ -3,8 +3,9 @@ import Div100vh from 'react-div-100vh';
 import { store } from './components/redux/store';
 import { Provider } from 'react-redux';
 import { Routes, BrowserRouter, Route } from "react-router-dom";
-import { Register, Login } from './components/account/account';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
+import { Login } from './components/account/login';
+import { Register } from './components/account/register';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DetailRecord } from './components/record/record';
 import { Account } from './components/account/account';
 import { Statistics } from './components/statistics/statistics';

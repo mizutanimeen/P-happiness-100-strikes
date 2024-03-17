@@ -1,17 +1,16 @@
-import { MachineGet, MachineGetRequest } from "../axios/machine";
-import { FullScreenDialog } from "./machine";
+import { MachineGet, MachineGetRequest } from "../../axios/machine";
+import { MachineDialog } from "../machine/machine";
+import { Machine } from "../machine/model";
 import { ExpandMore } from '@mui/icons-material';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { useEffect, useState, useRef } from "react";
-import { RPMRecordGet, RPMRecordUpdate, RPMRecordUpdateRequest } from "../axios/rpm";
+import { RPMRecordGet, RPMRecordUpdate, RPMRecordUpdateRequest } from "../../axios/rpm";
 import axios from "axios";
 import "./css/rpm.css";
-import "../util/css/util.css";
-import { Machine } from "./machine";
-
+import "../../util/css/util.css";
+import { InvestmentForm, RPMForm } from "./form";
 
 export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Element {
-    // TODO: まとめる。machineとか特にまとめられる
     const id = props.id;
     const rpmRecord = props.data;
     // formの値
@@ -20,8 +19,6 @@ export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Elemen
     const [startRPM, setStartRPM] = useState(0);
     const [endRPM, setEndRPM] = useState(0);
     const [rpm, setRPM] = useState<number>(0);
-    // strict modeのための対策
-    const firstCallDone = useRef(false);
     // マシーン情報
     const [isLoading, setIsLoading] = useState(false);
     const [getMachine, setGetMachine] = useState<MachineGet>();
@@ -33,7 +30,7 @@ export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Elemen
         }
     );
     // マシーンダイアログ
-    const [isMachineDialogOpen, setIsMachineDialogOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const machineGet = async () => {
         if (rpmRecord.machine_id === undefined || rpmRecord.machine_id === 0) {
@@ -41,22 +38,20 @@ export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Elemen
         }
         setIsLoading(true);
         await axios(MachineGetRequest(rpmRecord.machine_id)).then((result) => {
-            if (result.status === 200) {
-                setGetMachine(result.data);
-            }
-            setIsLoading(false);
+            setGetMachine(result.data);
         }).catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response.status !== 401) {
+                console.log(error);
             }
-            console.log(error);
-            setIsLoading(false);
         });
+        setIsLoading(false);
     };
 
+    const call = useRef(false);
     useEffect(() => {
         // strict modeのための対策
-        if (!firstCallDone.current) {
-            firstCallDone.current = true;
+        if (!call.current) {
+            call.current = true;
             machineGet();
             setInvestmentMoney(rpmRecord.investment_money);
             setInvestmentBall(rpmRecord.investment_ball);
@@ -77,17 +72,6 @@ export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Elemen
             }
         );
     }, [getMachine]);
-
-    const setInput = (value: string, set: (value: number) => void) => {
-        let n = Number(value);
-        if (isNaN(n)) {
-            return;
-        }
-        if (n < 0) {
-            n = 0;
-        }
-        set(n);
-    }
 
     useEffect(() => {
         if (!(investmentMoney || investmentBall) || !(startRPM || endRPM) || (startRPM > endRPM)) {
@@ -125,9 +109,10 @@ export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Elemen
                 alert("更新しました");
             }
         }).catch((error) => {
-            console.log(error);
-        }
-        );
+            if (error.response.status !== 401) {
+                console.log(error);
+            }
+        });
     }
 
     return <>
@@ -140,33 +125,13 @@ export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Elemen
                 記録{id}
             </AccordionSummary>
             <AccordionDetails className="rpmRecordContainer">
+                <InvestmentForm props={{ target: "money", rate: machine.rate, investment: investmentMoney, setInvestment: setInvestmentMoney }} />
+                <InvestmentForm props={{ target: "ball", rate: machine.rate, investment: investmentBall, setInvestment: setInvestmentBall }} />
+                <RPMForm props={{ target: "start", rpm: startRPM, setRPM: setStartRPM }} />
+                <RPMForm props={{ target: "end", rpm: endRPM, setRPM: setEndRPM }} />
                 <div>
-                    <label>投資額</label>
-                    <input className="box" type="text" pattern="[0-9]*" value={investmentMoney} onChange={(e) => setInput(e.target.value, setInvestmentMoney)} />
-                    <div className="investmentButtonBox">
-                        <InvestmentButton target="money" rate={machine.rate} investment={investmentMoney} setInvestment={setInvestmentMoney} />
-                    </div>
-                </div>
-                <div>
-                    <label>投資玉</label>
-                    <input className="box" type="text" pattern="[0-9]*" value={investmentBall} onChange={(e) => setInput(e.target.value, setInvestmentBall)} />
-                    <div className="investmentButtonBox">
-                        <InvestmentButton target="ball" rate={machine.rate} investment={investmentBall} setInvestment={setInvestmentBall} />
-                    </div>
-                </div>
-                <div>
-                    <label>開始回転数</label>
-                    <input className="box" type="text" pattern="[0-9]*" value={startRPM} onChange={(e) => setInput(e.target.value, setStartRPM)} />
-                    <input className="bar" type="range" value={startRPM} step={1} min={0} max={2000} onChange={(e) => setStartRPM(Number(e.target.value))} />
-                </div>
-                <div>
-                    <label>終了回転数</label>
-                    <input className="box" type="text" pattern="[0-9]*" value={endRPM} onChange={(e) => setInput(e.target.value, setEndRPM)} />
-                    <input className="bar" type="range" value={endRPM} step={1} min={0} max={2000} onChange={(e) => setEndRPM(Number(e.target.value))} />
-                </div>
-                <div>
-                    <button className="button" onClick={() => setIsMachineDialogOpen(true)}>機種を設定</button>
-                    <FullScreenDialog isMachineDialogOpen={isMachineDialogOpen} setIsMachineDialogOpen={setIsMachineDialogOpen} setMachine={setMachine} />
+                    <button className="button" onClick={() => setIsDialogOpen(true)}>機種を設定</button>
+                    <MachineDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} setMachine={setMachine} />
                     {!machine.id || isLoading ?
                         <></>
                         :
@@ -187,23 +152,3 @@ export function RPMRecord(props: { data: RPMRecordGet, id: number }): JSX.Elemen
     </>
 }
 
-type target = "money" | "ball"
-
-function InvestmentButton(props: { target: target, rate: number, investment: number, setInvestment: (value: number) => void }): JSX.Element {
-    const target = props.target;
-    const rate = props.rate;
-    const investment = props.investment;
-    const setInvestment = props.setInvestment;
-
-    const values: { [key: number]: { [key in target]: number } } = {
-        1: { money: 200, ball: 200 },
-        4: { money: 500, ball: 125 }
-    }
-
-    const value = values[rate][target];
-
-    return <>
-        <button className="button" onClick={() => setInvestment(investment - value < 0 ? 0 : investment - value)}>-{value}</button>
-        <button className="button" onClick={() => setInvestment(investment + value)}>+{value}</button>
-    </>
-}

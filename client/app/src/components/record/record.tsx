@@ -9,9 +9,9 @@ import { TimeRecordGetRequest, TimeRecordGet, TimeRecordUpdateRequest, TimeRecor
 import "./css/record.css";
 import "../util/css/util.css";
 import { RPMRecordCreateRequest, RPMRecordCreate, RPMRecordGet, RPMRecordGetRequest } from "../axios/rpm";
-import { RPMRecord } from "./rpm";
 import { useDispatch } from "react-redux";
 import { setTRCache } from "../redux/slice/calendar";
+import { RPMRecord } from "./rpm/rpm";
 
 export function DetailRecord() {
     const dispatch = useDispatch();
