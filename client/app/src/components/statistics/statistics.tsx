@@ -6,8 +6,10 @@ import { DateRecordsGetRequest, DateRecordsGet } from '../axios/date';
 import { TimeRecordsGetRequest, TimeRecordsGet } from '../axios/time';
 import { formatDate } from '../util/util';
 import { BarChart } from './chart';
+import { useSelector } from "../redux/store";
 
 export function Statistics(): JSX.Element {
+    const login = useSelector((state) => state.login.value);
     const call = useRef(false);
     const [dateRecords, setDateRecords] = useState<DateRecordsGet>({});
     const [timeRecords, setTimeRecords] = useState<TimeRecordsGet>({});
@@ -42,6 +44,14 @@ export function Statistics(): JSX.Element {
         }
     }, [start, end]);
 
+    if (!login) {
+        return <div className="container">
+            <BackHomeHeader />
+            <div className="contentBody">
+                <div>ログインしてください</div>
+            </div>
+        </div>
+    }
     return (
         <div className="container">
             <BackHomeHeader />
