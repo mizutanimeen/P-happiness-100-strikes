@@ -71,11 +71,7 @@ function TableBody(): JSX.Element {
             dispatch(login(true));
             setDateRecords(result.data);
         }).catch((error) => {
-            if (error.response.status === 401) {
-                dispatch(login(false));
-            } else {
-                console.log(error);
-            }
+            dispatch(login(false));
         });
     }
 
@@ -84,11 +80,7 @@ function TableBody(): JSX.Element {
             dispatch(login(true));
             setTimeRecords(result.data);
         }).catch((error) => {
-            if (error.response.status === 401) {
-                dispatch(login(false));
-            } else {
-                console.log(error);
-            }
+            dispatch(login(false));
         });
     };
 
