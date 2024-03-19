@@ -32,15 +32,8 @@ export function CalendarFooter(): JSX.Element {
         });
     }
 
-    if (login) {
-        return <>
-            <div className="footer login">
-                <Link to="/account" className="account"><button><MdAccountCircle /></button></Link>
-                <Link to="/statistics" className="statistics"><button>統計</button></Link>
-                <div className="plus"> <button onClick={createTimeRecord}> <CiCirclePlus /></button></div>
-            </div >
-        </>
-    } else {
+
+    if (!login) {
         return <>
             <div className="footer logout">
                 <Link to="/register"><button>新規登録</button></Link>
@@ -48,6 +41,13 @@ export function CalendarFooter(): JSX.Element {
             </div >
         </>
     }
+    return <>
+        <div className="footer login">
+            <Link to="/account" className="account"><button><MdAccountCircle /></button></Link>
+            <Link to="/statistics" className="statistics"><button>統計</button></Link>
+            <div className="plus"> <button onClick={createTimeRecord}> <CiCirclePlus /></button></div>
+        </div >
+    </>
 }
 
 
