@@ -1,8 +1,5 @@
 {
     "navigationFallback": {
-        "rewrite": "/index.html",
-        "exclude": [
-            "https://*"
-        ]
+        "rewrite": "/index.html"
     }
 }
