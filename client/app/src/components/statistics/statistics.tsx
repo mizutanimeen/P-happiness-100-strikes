@@ -44,22 +44,17 @@ export function Statistics(): JSX.Element {
         }
     }, [start, end]);
 
-    if (!login) {
-        return <div className="container">
-            <BackHomeHeader />
-            <div className="contentBody">
-                <div>ログインしてください</div>
-            </div>
+    return <div className="container">
+        <BackHomeHeader />
+        <div className="contentBody">
+            {
+                (!login) ? <div>ログインしてください</div> :
+                    <>
+                        <input type="date" value={start} onChange={(e) => setStart(e.target.value)} />
+                        <input type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
+                        <BarChart dateRecords={dateRecords} timeRecords={timeRecords} />
+                    </>
+            }
         </div>
-    }
-    return (
-        <div className="container">
-            <BackHomeHeader />
-            <div className="contentBody">
-                <input type="date" value={start} onChange={(e) => setStart(e.target.value)} />
-                <input type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
-                <BarChart dateRecords={dateRecords} timeRecords={timeRecords} />
-            </div>
-        </div>
-    );
+    </div>
 }
