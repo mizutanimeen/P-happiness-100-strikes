@@ -14,6 +14,15 @@ var (
 	userPass  = os.Getenv("MYSQL_USERS_PASSWORD")
 )
 
+func (s *Mysql) CreateUserTable() error {
+	query := fmt.Sprintf("create table %s (%s varchar(32) NOT NULL, %s varchar(64) NOT NULL, %s DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, %s DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (%s));",
+		userTable, userID, userPass, createAt, updateAt, userID)
+	if _, err := s.DB.Exec(query); err != nil {
+		return fmt.Errorf("error exec: %w", err)
+	}
+	return nil
+}
+
 func (s *Mysql) UserGet(id string) (*model.User, error) {
 	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ?", userTable, userID)
 	row := s.DB.QueryRow(query, id)

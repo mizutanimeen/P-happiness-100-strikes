@@ -47,6 +47,6 @@
 FROM golang:1.21.6
 
 # ホットリロード
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/cosmtrek/air@v1.49.0
 
 WORKDIR /src

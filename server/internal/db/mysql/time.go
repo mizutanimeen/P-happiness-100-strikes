@@ -18,6 +18,17 @@ var (
 	timeRecordRecoveryMoney   = os.Getenv("MYSQL_TIME_RECORD_RECOVERY_MONEY")
 )
 
+func (s *Mysql) CreateTimeRecordTable() error {
+	query := fmt.Sprintf("create table %s (%s int(16) AUTO_INCREMENT, %s varchar(32) NOT NULL, %s DATETIME NOT NULL, %s int(64) NOT NULL, %s int(64) NOT NULL, %s DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, %s DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (%s), FOREIGN KEY (%s) REFERENCES %s(%s));",
+		timeRecordTable, timeRecordID, timeRecordUserID, timeRecordTime, timeRecordInvestmentMoney, timeRecordRecoveryMoney, createAt, updateAt, timeRecordID, timeRecordUserID, userTable, userID)
+	if _, err := s.DB.Exec(query); err != nil {
+		return fmt.Errorf("error exec: %w", err)
+	}
+
+	return nil
+
+}
+
 func (s *Mysql) TimeRecordsGet(userID string, startDate time.Time, endDate time.Time) ([]*model.TimeRecord, error) {
 	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s >= ? AND %s <= ? ORDER BY %s ASC", timeRecordTable, timeRecordUserID, timeRecordTime, timeRecordTime, timeRecordTime)
 	rows, err := s.DB.Query(query, userID, startDate, endDate)

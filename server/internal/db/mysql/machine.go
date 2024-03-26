@@ -16,6 +16,16 @@ var (
 	machineRate   = os.Getenv("MYSQL_MACHINE_RATE")
 )
 
+func (s *Mysql) CreateMachineTable() error {
+	query := fmt.Sprintf("create table %s (%s int(16) AUTO_INCREMENT, %s varchar(32) NOT NULL, %s varchar(64) NOT NULL, %s int(16) NOT NULL, %s DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, %s DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (%s), FOREIGN KEY (%s) REFERENCES %s(%s));",
+		machineTable, machineID, machineUserID, machineName, machineRate, createAt, updateAt, machineID, machineUserID, userTable, userID)
+	if _, err := s.DB.Exec(query); err != nil {
+		return fmt.Errorf("error exec: %w", err)
+	}
+	return nil
+
+}
+
 func (s *Mysql) MachinesGet(userID string) ([]*model.Machine, error) {
 	query := fmt.Sprintf("SELECT * FROM %s WHERE %s = ?", machineTable, machineUserID)
 	rows, err := s.DB.Query(query, userID)

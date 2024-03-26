@@ -11,6 +11,12 @@ type Mysql struct {
 	DB *sql.DB
 }
 
+// TODO: -> CREATE_AT, UPDATE_AT
+var (
+	createAt = os.Getenv("MYSQL_CREATEDAT")
+	updateAt = os.Getenv("MYSQL_UPDATEDAT")
+)
+
 func New() (*Mysql, error) {
 	user := os.Getenv("MYSQL_USER")
 	pass := os.Getenv("MYSQL_PASSWORD")
@@ -48,4 +54,23 @@ func checkConnect(DB *sql.DB) error {
 
 func (s *Mysql) Close() error {
 	return s.DB.Close()
+}
+
+func (s *Mysql) TouchTables() error {
+	if err := s.CreateUserTable(); err != nil {
+		return fmt.Errorf("error create user table: %w", err)
+	}
+	if err := s.CreateMachineTable(); err != nil {
+		return fmt.Errorf("error create machine table: %w", err)
+	}
+	if err := s.CreateDateRecordTable(); err != nil {
+		return fmt.Errorf("error create date record table: %w", err)
+	}
+	if err := s.CreateTimeRecordTable(); err != nil {
+		return fmt.Errorf("error create time record table: %w", err)
+	}
+	if err := s.CreateRPMRecordTable(); err != nil {
+		return fmt.Errorf("error create rpm record table: %w", err)
+	}
+	return nil
 }

@@ -20,6 +20,10 @@ func New() (*App, error) {
 		return nil, err
 	}
 
+	if err := DB.TouchTables(); err != nil {
+		return nil, err
+	}
+
 	return &App{
 		DB:      DB,
 		Session: session.New(),
