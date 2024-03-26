@@ -61,6 +61,9 @@
 |バックエンド|Container Apps|
 |データベース|Azure Database / Cache|
 
+## デザイン
+[ココ](https://docs.google.com/presentation/d/1iPuevsa03KxO3kxf3-OADJJJgygl0vxc/edit?usp=sharing&ouid=111213989042614698338&rtpof=true&sd=true)から閲覧できます。
+
 ## 開発環境構築
 vscodeのdevcontainer内でコードを編集
 
