@@ -3,6 +3,7 @@ package session
 import (
 	"context"
 	"crypto/rand"
+	"crypto/tls"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -23,8 +24,10 @@ type Session struct {
 func New() *Session {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_IP"),
-		Password: "",
-		DB:       0,
+		Password: os.Getenv("REDIS_PASSWORD"),
+		TLSConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		},
 	})
 
 	return &Session{
