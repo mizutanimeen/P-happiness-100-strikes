@@ -62,8 +62,9 @@ func RegisterHandler(DB db.DB, s *session.Session) func(w http.ResponseWriter, r
 			Value:    sessionID,
 			Expires:  time.Now().Add(COOKIE_SESSION_EXPIRATION),
 			Path:     "/",
-			Secure:   false, // TODO: true にする
-			HttpOnly: true,
+			Secure: true
+			// Secure:   false, // TODO: true にする
+			// HttpOnly: true,
 		})
 
 		w.Header().Set("Content-Type", "application/json")
@@ -111,8 +112,9 @@ func LoginHandler(DB db.DB, s *session.Session) func(w http.ResponseWriter, r *h
 			Value:    sessionID,
 			Expires:  time.Now().Add(COOKIE_SESSION_EXPIRATION),
 			Path:     "/",
-			Secure:   false, // TODO: true にする
-			HttpOnly: true,
+			Secure: true
+			// Secure:   false, // TODO: true にする
+			// HttpOnly: true,
 		})
 
 		w.Header().Set("Content-Type", "application/json")
