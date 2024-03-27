@@ -178,20 +178,21 @@ func WithAuth(next http.Handler, s *session.Session) http.Handler {
 			return
 		}
 
-		// クッキーに新しいセッションIDを保存
-		newSessionID, err := s.UpdateSession(cookie.Value, userID)
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		http.SetCookie(w, &http.Cookie{
-			Name:     COOKIE_SESSION_NAME,
-			Value:    newSessionID,
-			Expires:  time.Now().Add(COOKIE_SESSION_EXPIRATION),
-			Path:     "/",
-			Secure:   false, // TODO: true にする
-			HttpOnly: true,
-		})
+		// TODO: デプロイするとエラーになるのでいったんコメントアウト
+		// // クッキーに新しいセッションIDを保存
+		// newSessionID, err := s.UpdateSession(cookie.Value, userID)
+		// if err != nil {
+		// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		// 	return
+		// }
+		// http.SetCookie(w, &http.Cookie{
+		// 	Name:     COOKIE_SESSION_NAME,
+		// 	Value:    newSessionID,
+		// 	Expires:  time.Now().Add(COOKIE_SESSION_EXPIRATION),
+		// 	Path:     "/",
+		// 	Secure:   false, // TODO: true にする
+		// 	HttpOnly: true,
+		// })
 
 		c = context.WithValue(c, CK_USERID, userID)
 		next.ServeHTTP(w, r.WithContext(c))
