@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -41,10 +42,14 @@ func RegisterHandler(DB db.DB, s *session.Session) func(w http.ResponseWriter, r
 
 		// TODO: ユーザー名の重複チェック
 
-		if err := DB.UserCreate(registerReq.UserID, registerReq.Password); err != nil {
+		createUserID, err := DB.UserCreate(registerReq.UserID, registerReq.Password)
+		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+
+		// ユーザー数把握のためのログ
+		log.Println("createUserID: ", createUserID)
 
 		sessionID, err := s.CreateSession(registerReq.UserID)
 		if err != nil {

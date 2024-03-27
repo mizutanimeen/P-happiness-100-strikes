@@ -42,7 +42,7 @@ ENV LANG=ja_JP.UTF-8
 COPY --from=server /workdir/server /server
 COPY /server/DigiCertGlobalRootCA.crt.pem /DigiCertGlobalRootCA.crt.pem
 
-ENTRYPOINT [ "/server" ]
+CMD [ "/server" ]
 
 # #dev
 # FROM golang:1.21.6

@@ -12,7 +12,7 @@ type DB interface {
 
 	CreateUserTable() error
 	UserGet(id string) (*model.User, error)
-	UserCreate(id string, password string) error
+	UserCreate(id string, password string) (int64, error)
 
 	CreateDateRecordTable() error
 	DateRecordsGet(userID string, startDate time.Time, endDate time.Time) ([]*model.DateRecord, error)
