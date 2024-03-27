@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/mizutanimeen/P-happiness-100-strikes/internal/app"
 )
@@ -30,6 +31,10 @@ func main() {
 // TODO: ログローテーション
 // TODO: 書く場所を変える。app.New()とか
 func logSetting(logPath string) (*os.File, error) {
+	if err := os.MkdirAll(filepath.Dir(logPath), os.ModePerm);err != nil {
+		return nil, err
+	}
+
 	f, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		return nil, err
